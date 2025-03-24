@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/configs/constants.dart';
 import 'package:get/get.dart';
 import 'donation_status.dart';
 import 'dart:math' as math;
@@ -179,49 +180,8 @@ class _DonatePageState extends State<DonatePage> {
                       ),
                     ),
                     SizedBox(height: 16),
-
-                    // Name field
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Full Name',
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-
-                    // Email field
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-
-                    // Phone field
+              
+                // Phone field
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
@@ -470,6 +430,7 @@ class _DonatePageState extends State<DonatePage> {
                           child: Text(
                             'Complete Donation',
                             style: TextStyle(
+                              color: appwhiteColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -586,7 +547,7 @@ class _DonatePageState extends State<DonatePage> {
   }
 
   void _navigateToDonationStatus() {
-    Get.to(() => DonationStatusPage(
+    Get.to(() => StatusPage(
       donationId: _donationId!,
       itemName: widget.itemName,
       quantity: _quantity,

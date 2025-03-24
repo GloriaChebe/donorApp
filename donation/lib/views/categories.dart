@@ -17,6 +17,7 @@ class CategoriesPage extends StatelessWidget {
           child: Text(
             'Browse Categories',
             style: TextStyle(
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -33,7 +34,7 @@ class CategoriesPage extends StatelessWidget {
             child: Obx(() => ListView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 16),
-              children: <String>['All', 'Food', 'Textiles', 'Engineering', 'Medical']
+              children: <String>['All', 'Food', 'Textiles', 'Engineering', 'Leather']
                   .map((String category) {
                 bool isSelected = itemController.selectedCategory.value == category;
                 return Padding(

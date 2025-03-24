@@ -14,9 +14,9 @@ class ItemController extends GetxController {
 
   void fetchItems() {
     var mockItems = [
-      Item(name: 'Rice', category: 'Food', imageUrl: 'https://example.com/images/rice.jpg'),
-      Item(name: 'Milk', category: 'Food', imageUrl: 'https://example.com/images/milk.jpg'),
-      Item(name: 'Blankets', category: 'Textiles', imageUrl: 'https://example.com/images/blankets.jpg'),
+      Item(name: 'Honey', category: 'Food', imageUrl: 'assets/images/honey.jpeg'),
+      Item(name: 'Oranges', category: 'Food', imageUrl: 'https://example.com/images/milk.jpg'),
+      Item(name: 'Banana Stems', category: 'Textiles', imageUrl: 'https://example.com/images/blankets.jpg'),
       Item(name: 'Solar Panels', category: 'Engineering', imageUrl: 'https://example.com/images/solar_panels.jpg'),
       Item(name: 'Medical Kits', category: 'Medical', imageUrl: 'https://example.com/images/medical_kits.jpg'),
     ];

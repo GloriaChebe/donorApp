@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/homeController.dart';
 import 'package:flutter_application_1/views/categories.dart';
+import 'package:flutter_application_1/views/donation_status.dart';
 import 'package:flutter_application_1/views/homePage.dart';
 import 'package:flutter_application_1/views/profile.dart';
 import 'package:get/get.dart';
@@ -15,8 +16,9 @@ HomeController homeController = Get.put(HomeController());
 
 class navPage extends StatelessWidget {
   final List<Widget> screens = [
-    DonorHomePage(),
+    HomePage(),
     CategoriesPage(),
+    StatusPage(donationId: '234444', itemName: 'milk', quantity: 2, pickupOption: 'dropoff'),
     ProfilePage(), // Ensure ProfilePage is included here
   ];
 
@@ -25,7 +27,7 @@ class navPage extends StatelessWidget {
     return Scaffold(
       body: Obx(() => screens[homeController.selectedPage.value]),
       bottomNavigationBar: GNav(
-        color: primaryColor,
+        color: secondaryColor,
         backgroundColor: primaryColor.withOpacity(0.2),
         tabBackgroundColor: primaryColor.withOpacity(0.5),
         tabs: [
@@ -35,9 +37,14 @@ class navPage extends StatelessWidget {
             text: 'Home',
           ),
           GButton(
-            icon: Icons.settings,
+            icon: Icons.category,
             iconColor: appBlackColor,
-            text: 'Settings',
+            text: 'Categories',
+          ),
+           GButton(
+            icon: Icons.chat,
+            iconColor: appBlackColor,
+            text: 'Status',
           ),
           GButton(
             icon: Icons.person,
