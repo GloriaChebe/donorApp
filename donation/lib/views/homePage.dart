@@ -37,6 +37,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Welcome Gloria!",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -196,7 +197,7 @@ Padding(
         child: Icon(
           Icons.arrow_forward,
           size: 36,
-          color: Colors.blue, // Optional: Add color to the arrow
+          color: secondaryColor , // Optional: Add color to the arrow
         ),
       ),
     ],
@@ -250,7 +251,7 @@ class PodiumChart extends StatelessWidget {
             // First place (tallest in the middle)
             PodiumBar(
               height: 200,
-              color: Colors.blue.shade600,
+              color: primaryColor,
               rank: 1,
               productName: topProducts[0].name,
               
@@ -296,7 +297,7 @@ class PodiumBar extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: secondaryColor.withOpacity(0.02),
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(

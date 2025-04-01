@@ -58,7 +58,6 @@ class SignUpController extends GetxController {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Navigate to login screen
               Get.toNamed('/login');
             },
             style: ElevatedButton.styleFrom(

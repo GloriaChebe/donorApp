@@ -1,277 +1,24 @@
-import 'package:flutter/material.dart';
-
-class StatusPage extends StatefulWidget {
-  final String donationId;
-  final String itemName;
-  final int quantity;
-  final String pickupOption;
-  final DateTime? pickupDate;
-  final TimeOfDay? pickupTime;
-  final String currentStatus;
-
-  StatusPage({
-    required this.donationId,
-    required this.itemName,
-    required this.quantity,
-    required this.pickupOption,
-    this.pickupDate,
-    this.pickupTime,
-    this.currentStatus = 'Pending',
-  });
-
-  @override
-  _DonationStatusPage createState() => _DonationStatusPage();
-}
-
-class _DonationStatusPage extends State<StatusPage> {
-  bool _showFullDetails = false; // Toggle for showing full details
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Donation Status'),
-        backgroundColor: Color(0xFF1565C0),
-        actions: [
-          // General message button in the app bar
-          IconButton(
-            icon: Icon(Icons.message),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MessagesPage(),
-                ),
-              );
-            },
-            tooltip: 'Messages',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Upper Details Section
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Donation ID: ${widget.donationId}',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(widget.currentStatus),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        widget.currentStatus,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Item: ${widget.quantity} x ${widget.itemName}',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Pickup Option: ${widget.pickupOption}',
-                  style: TextStyle(fontSize: 16),
-                ),
-                if (widget.pickupOption == 'Schedule Pickup' &&
-                    widget.pickupDate != null &&
-                    widget.pickupTime != null) ...[
-                  SizedBox(height: 8),
-                  Text(
-                    'Scheduled For: ${widget.pickupDate!.day}/${widget.pickupDate!.month}/${widget.pickupDate!.year} at ${widget.pickupTime!.hour}:${widget.pickupTime!.minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-                // Dropdown Arrow Below Status
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showFullDetails = !_showFullDetails; // Toggle visibility
-                    });
-                  },
-                  child: Center(
-                    child: Icon(
-                      _showFullDetails ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                      size: 32,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Full Details Section
-          Visibility(
-            visible: _showFullDetails,
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Timeline Section
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: StepProgressIndicator(
-                              currentStep: _getStepIndex(widget.currentStatus),
-                              steps: ['Pending', 'Approved', 'Picked Up', 'Completed'],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Status Description Section
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      margin: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getStatusDescription(widget.currentStatus),
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      // Floating action button to access messages
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MessagesPage(),
-            ),
-          );
-        },
-        backgroundColor: Color(0xFF1565C0),
-        child: Icon(Icons.chat),
-        tooltip: 'Messages',
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Pending':
-        return Colors.orange;
-      case 'Approved':
-        return Colors.green;
-      case 'Rejected':
-        return Colors.red;
-      case 'Picked Up':
-        return Colors.blue;
-      case 'Completed':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  int _getStepIndex(String status) {
-    switch (status) {
-      case 'Pending':
-        return 0;
-      case 'Approved':
-        return 1;
-      case 'Picked Up':
-        return 2;
-      case 'Completed':
-        return 3;
-      default:
-        return 0;
-    }
-  }
-
-  String _getStatusDescription(String status) {
-    switch (status) {
-      case 'Pending':
-        return 'Your donation request has been submitted and is awaiting administrator review. We will process it as soon as possible.';
-      case 'Approved':
-        return 'Your donation has been approved. Please follow the pickup instructions or await further communication from our team.';
-      case 'Picked Up':
-        return 'Your donation has been picked up successfully. Thank you for your contribution!';
-      case 'Completed':
-        return 'Your donation process has been completed. Thank you for your generosity and support!';
-      case 'Rejected':
-        return 'Unfortunately, your donation request could not be accepted at this time. Please check messages for more details.';
-      default:
-        return 'Status information not available. Please contact administrator for more details.';
-    }
-  }
-}
-
 // Messages list page
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
+
 class MessagesPage extends StatelessWidget {
   final List<ChatThread> threads = [
     ChatThread(
-      donationId: 'D12345',
-      itemName: 'Books',
+     userId: '1001',
       lastMessage: 'Your donation has been approved.',
       timestamp: DateTime.now().subtract(Duration(hours: 2)),
       unreadCount: 1,
     ),
-    ChatThread(
-      donationId: 'D12346',
-      itemName: 'Clothing',
-      lastMessage: 'We will be collecting your items tomorrow.',
-      timestamp: DateTime.now().subtract(Duration(days: 1)),
-      unreadCount: 0,
-    ),
-    ChatThread(
-      donationId: 'D12347',
-      itemName: 'Electronics',
-      lastMessage: 'Can you provide more details about the condition?',
-      timestamp: DateTime.now().subtract(Duration(days: 3)),
-      unreadCount: 2,
-    ),
+   
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messages'),
-        backgroundColor: Color(0xFF1565C0),
+        title: Text('Messages' ,),
+        backgroundColor: primaryColor,
       ),
       body: threads.isEmpty
           ? Center(
@@ -314,7 +61,7 @@ class MessagesPage extends StatelessWidget {
                   title: Row(
                     children: [
                       Text(
-                        'Donation #${thread.donationId}',
+                        'Donation #${thread.userId}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(width: 8),
@@ -337,7 +84,7 @@ class MessagesPage extends StatelessWidget {
                     children: [
                       SizedBox(height: 4),
                       Text(
-                        thread.itemName,
+                        thread.userId,
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       SizedBox(height: 4),
@@ -362,7 +109,7 @@ class MessagesPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatPage(donationId: thread.donationId),
+                        builder: (context) => ChatPage(donationId: thread.userId),
                       ),
                     );
                   },
@@ -470,8 +217,8 @@ class _ChatPageState extends State<ChatPage> {
       ChatMessage(
         sender: 'System',
         message: widget.donationId == 'general'
-            ? 'Welcome to support. How can we help you today?'
-            : 'Donation request has been submitted. An administrator will review it shortly.',
+            ? ' How can we help you today?'
+            : ' An administrator will reply it shortly.',
         isSystem: true,
         timestamp: DateTime.now().subtract(Duration(hours: 1)),
       ),
@@ -724,21 +471,18 @@ class _ChatPageState extends State<ChatPage> {
 
 // Chat thread model for messages list
 class ChatThread {
-  final String donationId;
-  final String itemName;
+  final String userId;
   final String lastMessage;
   final DateTime timestamp;
   final int unreadCount;
 
   ChatThread({
-    required this.donationId,
-    required this.itemName,
+     required this.userId,
     required this.lastMessage,
     required this.timestamp,
     this.unreadCount = 0,
   });
 }
-
 // Chat message model
 class ChatMessage {
   final String sender;
@@ -756,88 +500,4 @@ class ChatMessage {
     this.isAdmin = false,
     this.isSystem = false,
   });
-}
-
-// Custom step progress indicator
-class StepProgressIndicator extends StatelessWidget {
-  final int currentStep;
-  final List<String> steps;
-
-  StepProgressIndicator({
-    required this.currentStep,
-    required this.steps,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: List.generate(steps.length, (index) {
-            final isActive = index <= currentStep;
-            final isFirst = index == 0;
-            final isLast = index == steps.length - 1;
-            
-            return Expanded(
-              child: Row(
-                children: [
-                  // Line before circle (except for first item)
-                  if (!isFirst)
-                    Expanded(
-                      child: Container(
-                        height: 2,
-                        color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
-                      ),
-                    ),
-                  
-                  // Circle
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
-                      border: Border.all(
-                        //color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
-                        width: 2,
-                      ),
-                    ),
-                    child: isActive
-                        ? Icon(Icons.check, color: Colors.white, size: 16)
-                        : null,
-                  ),
-                  
-                  // Line after circle (except for last item)
-                  if (!isLast)
-                    Expanded(
-                      child: Container(
-                        height: 2,
-                        color: index < currentStep ? Color(0xFF1565C0) : Colors.grey[300],
-                      ),
-                    ),
-                ],
-              ),
-            );
-          }),
-        ),
-        SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: steps.map((step) {
-            final index = steps.indexOf(step);
-            final isActive = index <= currentStep;
-            
-            return Text(
-              step,
-              style: TextStyle(
-                color: isActive ? Color(0xFF1565C0) : Colors.grey,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                fontSize: 12,
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
 }

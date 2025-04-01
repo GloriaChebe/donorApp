@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/views/status.dart';
+
 import 'package:get/get.dart';
-import 'donation_status.dart';
+
 import 'dart:math' as math;
 
 class DonatePage extends StatefulWidget {
@@ -547,11 +549,11 @@ class _DonatePageState extends State<DonatePage> {
   }
 
   void _navigateToDonationStatus() {
-    Get.to(() => StatusPage(
+    Get.to(() => Statuspage(
       donationId: _donationId!,
       itemName: widget.itemName,
       quantity: _quantity,
-      pickupOption: _pickupOption,
+      pickupOption: _pickupOption, currentStatus: '',
     ));
   }
 

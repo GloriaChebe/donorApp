@@ -12,7 +12,7 @@ class CategoriesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
         title: Center(
           child: Text(
             'Browse Categories',

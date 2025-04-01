@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/homeController.dart';
 import 'package:flutter_application_1/views/categories.dart';
-import 'package:flutter_application_1/views/donation_status.dart';
+
 import 'package:flutter_application_1/views/homePage.dart';
 import 'package:flutter_application_1/views/profile.dart';
+import 'package:flutter_application_1/views/status.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -18,7 +19,7 @@ class navPage extends StatelessWidget {
   final List<Widget> screens = [
     HomePage(),
     CategoriesPage(),
-    StatusPage(donationId: '234444', itemName: 'milk', quantity: 2, pickupOption: 'dropoff'),
+    Statuspage(donationId: '234444', itemName: 'milk', quantity: 2, pickupOption: 'dropoff', currentStatus: 'Pending',),
     ProfilePage(), // Ensure ProfilePage is included here
   ];
 

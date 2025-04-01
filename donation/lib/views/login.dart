@@ -1,15 +1,11 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/loginController.dart';
-
 import 'package:get/get.dart';
-
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
-
   @override
   State<SignInScreen> createState() => _SignInScreenState();
 }
@@ -62,13 +58,15 @@ class _SignInScreenState extends State<SignInScreen> {
                 ],
               ),
             ),
+            
           ),
+         
           // Form Widget (On top)
           Positioned(
-            top: 120,
+            top:130,
             left: 0,
             right: 0,
-            height: MediaQuery.of(context).size.height * 0.8,
+      height: MediaQuery.of(context).size.height * 0.6,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -174,7 +172,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     //forgotPasswordPopup(context); // Show the forgot password popup dialog
                                   },
                                   child: const Text(
-                                    "Forgot Password",
+                                    "Forgot Password?",
                                     style: TextStyle(
                                       color: Color.fromARGB(255, 245, 132, 14),
                                     ),
@@ -190,7 +188,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               // if(_formKey.currentState!.validate()){
                               //   print("Go to dashboard");
                               // }
-                              Get.toNamed('/homepage');
+                              Get.toNamed('/admin');
                             
                             
                               
@@ -223,7 +221,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Get.toNamed("/signup");
+                                  Get.toNamed("/signUp");
                                 },
                                 child: const Text(
                                   "Sign Up",
@@ -235,7 +233,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               )
                             ],
                           ),
-                          const SizedBox(height: 80),
+                          const SizedBox(height:80),
                         ],
                       ),
                     ),

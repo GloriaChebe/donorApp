@@ -19,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: primaryColor,
       ),
       body: Stack(
@@ -94,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           const SizedBox(height: 10),
 
-                          // First and Last Name
+                          
                           Row(
                             children: [
                               Expanded(
@@ -136,7 +137,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           const SizedBox(height: 10),
 
-                          // Email Address
                           TextFormField(
                             controller: controller.emailController,
                             decoration: const InputDecoration(
@@ -195,11 +195,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           const SizedBox(height: 10),
 
-                          // Terms and Conditions
+                          
                           
                           const SizedBox(height: 20),
 
-                          // Sign-Up Button
+                         
                           ElevatedButton(
                             onPressed: ()  {
                              
@@ -214,7 +214,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Social Sign-Up
+                          
                           const Text("Or"),
                           const SizedBox(height: 10),
                           ElevatedButton(

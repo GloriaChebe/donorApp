@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
 
 class TermsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Terms and Conditions"),
-        backgroundColor: Colors.blue,
+        automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
+        title: Text("Terms and Conditions", style: TextStyle(color: Colors.white)),
+        backgroundColor: primaryColor,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),

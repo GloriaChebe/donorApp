@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/utils/link.dart';
 import 'package:flutter_application_1/views/categories.dart';
-import 'package:flutter_application_1/views/homePage.dart';
 import 'package:flutter_application_1/views/login.dart';
 import 'package:flutter_application_1/views/signUp.dart';
 import 'package:get/get.dart';
@@ -17,8 +17,11 @@ class MyApp extends StatelessWidget {
       title: 'Donor App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+       
       ),
-      home: navPage(), // Set navPage as the home widget
+      //itialRoute: AppRouting.initialRoute,
+     getPages: AppRouting.getPages,
+      home: SignInScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

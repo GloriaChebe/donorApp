@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/views/contactUs.dart';
 import 'package:flutter_application_1/views/terms.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -65,14 +68,15 @@ class ProfilePage extends StatelessWidget {
             child: Text(
               "ACCOUNT",
               style: TextStyle(
-                color: Colors.grey[600],
+                color:primaryColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 16,
               ),
             ),
           ),
           
           Card(
+            //color: secondaryColor.withOpacity(0.001),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             elevation: 2,
             shape: RoundedRectangleBorder(
@@ -89,7 +93,9 @@ class ProfilePage extends StatelessWidget {
                     // Navigate to My Profile page
                   },
                 ),
+                SizedBox(height: 10),
                 Divider(height: 1, indent: 64),
+                SizedBox(height: 10),
                 _buildListTile(
                   context,
                   Icons.support,
@@ -116,9 +122,9 @@ class ProfilePage extends StatelessWidget {
             child: Text(
               "LEGAL",
               style: TextStyle(
-                color: Colors.grey[600],
+                color:primaryColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 16,
               ),
             ),
           ),
@@ -151,10 +157,10 @@ class ProfilePage extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton(
               onPressed: () {
-                // Handle log out
+                Get.toNamed("login");
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[400],
+                backgroundColor: primaryColor,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -164,7 +170,7 @@ class ProfilePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.logout),
+                  Icon(Icons.logout,color: appwhiteColor,),
                   SizedBox(width: 8),
                   Text(
                     "Log Out",
