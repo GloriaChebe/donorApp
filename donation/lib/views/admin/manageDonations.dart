@@ -7,8 +7,12 @@ class ManageDonationsPage extends StatelessWidget {
     return DefaultTabController(
       length: 4, 
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
+        appBar: AppBar( leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: appwhiteColor),
+          onPressed: () {
+            Navigator.pushNamed(context, '/admin'); 
+          },
+        ),
           title: Text('Manage Donations',style: TextStyle(color: appwhiteColor),),
           backgroundColor:primaryColor,
           bottom: TabBar(
@@ -23,49 +27,58 @@ class ManageDonationsPage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            // Pending Donations Tab
-            DonationList(
-              donations: _getPendingDonations(),
-              onApprove: (donation) {
-                // Handle approve action
-              },
-              onReject: (donation) {
-                // Handle reject action
-              },
-              onMarkAsPickedUp: null, // No "Mark as Picked Up" for pending donations
-              onMarkAsCompleted: null, // No "Mark as Completed" for pending donations
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.blue.shade50, Colors.white],
             ),
-            // Approved/Rejected Donations Tab
-            DonationList(
-              donations: _getApprovedDonations(),
-              onApprove: null, // No "Approve" for already approved donations
-              onReject: null, // No "Reject" for already approved donations
-              onMarkAsPickedUp: (donation) {
-                // Handle mark as picked up action
-              },
-              onMarkAsCompleted: null, // No "Mark as Completed" for approved donations
-            ),
-            // Picked Up Donations Tab
-            DonationList(
-              donations: _getPickedUpDonations(),
-              onApprove: null,
-              onReject: null,
-              onMarkAsPickedUp: null, // No "Mark as Picked Up" for picked up donations
-              onMarkAsCompleted: (donation) {
-                // Handle mark as completed action
-              },
-            ),
-            // Completed Donations Tab
-            DonationList(
-              donations: _getCompletedDonations(),
-              onApprove: null,
-              onReject: null,
-              onMarkAsPickedUp: null,
-              onMarkAsCompleted: null, // No actions for completed donations
-            ),
-          ],
+         ),
+          child: TabBarView(
+            children: [
+              // Pending Donations Tab
+              DonationList(
+                donations: _getPendingDonations(),
+                onApprove: (donation) {
+                  // Handle approve action
+                },
+                onReject: (donation) {
+                  // Handle reject action
+                },
+                onMarkAsPickedUp: null, // No "Mark as Picked Up" for pending donations
+                onMarkAsCompleted: null, // No "Mark as Completed" for pending donations
+              ),
+              // Approved/Rejected Donations Tab
+              DonationList(
+                donations: _getApprovedDonations(),
+                onApprove: null, // No "Approve" for already approved donations
+                onReject: null, // No "Reject" for already approved donations
+                onMarkAsPickedUp: (donation) {
+                  // Handle mark as picked up action
+                },
+                onMarkAsCompleted: null, // No "Mark as Completed" for approved donations
+              ),
+              // Picked Up Donations Tab
+              DonationList(
+                donations: _getPickedUpDonations(),
+                onApprove: null,
+                onReject: null,
+                onMarkAsPickedUp: null, // No "Mark as Picked Up" for picked up donations
+                onMarkAsCompleted: (donation) {
+                  // Handle mark as completed action
+                },
+              ),
+              // Completed Donations Tab
+              DonationList(
+                donations: _getCompletedDonations(),
+                onApprove: null,
+                onReject: null,
+                onMarkAsPickedUp: null,
+                onMarkAsCompleted: null, // No actions for completed donations
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
 
 class ManageUsersPage extends StatelessWidget {
   @override
@@ -7,8 +8,17 @@ class ManageUsersPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Users'),
-        backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: appwhiteColor),
+          onPressed: () {
+            Navigator.pushNamed(context, '/admin'); // Navigate to Admin Page
+          },
+        ),
+        title: Text(
+          'Users',
+          style: TextStyle(color: appwhiteColor),
+        ),
+        backgroundColor: primaryColor,
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal, // Enable horizontal scrolling
@@ -38,31 +48,31 @@ class ManageUsersPage extends StatelessWidget {
   List<Map<String, String>> _getUsers() {
     return [
       {
-        'id': 'U001',
-        'name': 'John Doe',
-        'email': 'john.doe@example.com',
-        'contacts': '+1234567890',
-        'role': 'Donor',
-      },
-      {
-        'id': 'U002',
-        'name': 'Jane Smith',
-        'email': 'jane.smith@example.com',
-        'contacts': '+9876543210',
-        'role': 'Recipient',
-      },
-      {
-        'id': 'U003',
-        'name': 'Alice Johnson',
-        'email': 'alice.johnson@example.com',
-        'contacts': '+1122334455',
+        'id': '001',
+        'name': 'Gloria Chebet',
+        'email': 'gloss@gmail.com',
+        'contacts': '0745881266',
         'role': 'Admin',
       },
       {
-        'id': 'U004',
-        'name': 'Bob Brown',
-        'email': 'bob.brown@example.com',
-        'contacts': '+9988776655',
+        'id': '002',
+        'name': 'Linus Korir',
+        'email': 'linusKorir@gmail.com',
+        'contacts': '0700000001',
+        'role': 'Donor',
+      },
+      {
+        'id': '003',
+        'name': 'Alice Macharia',
+        'email': 'alicemacharia01n@gmail.com',
+        'contacts': '0700000002',
+        'role': 'Donor',
+      },
+      {
+        'id': '004',
+        'name': 'Felix Omondi',
+        'email': 'omosh@gmail.com.com',
+        'contacts': '0700000003',
         'role': 'Donor',
       },
     ];

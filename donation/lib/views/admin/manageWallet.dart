@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
 
 class ManageWalletPage extends StatelessWidget {
   @override
@@ -7,13 +8,19 @@ class ManageWalletPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: appwhiteColor),
+          onPressed: () {
+            Navigator.pushNamed(context, '/admin');
+          },
+        ),
         title: const Text(
-          'Manage Wallet',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          'Wallet',
+          style: TextStyle(fontWeight: FontWeight.w600, color: appwhiteColor),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.blue.shade700,
+        backgroundColor: primaryColor,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -33,7 +40,7 @@ class ManageWalletPage extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.shade600, Colors.blue.shade800],
+                    colors: [primaryColor, secondaryColor],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -70,7 +77,7 @@ class ManageWalletPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        '\$${walletBalance.toStringAsFixed(2)}',
+                        '\Ksh ${walletBalance.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -78,19 +85,12 @@ class ManageWalletPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Available Balance',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 30),
-              
+
               // Actions Section Header
               Padding(
                 padding: const EdgeInsets.only(left: 4.0, bottom: 16.0),
@@ -117,25 +117,42 @@ class ManageWalletPage extends StatelessWidget {
                   ],
                 ),
               ),
-              
-              // Just Withdraw Action Button
-              Center(
-                child: SizedBox(
-                  width: 150,
-                  child: _buildActionButton(
-                    context,
-                    title: 'Withdraw',
-                    icon: Icons.remove_circle,
-                    color: Colors.red,
-                    onTap: () {
-                      Navigator.pushNamed(context, '/withdrawFunds');
-                    },
+
+              // Quick Actions Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Withdraw Button
+                  SizedBox(
+                    width: 150,
+                    child: _buildActionButton(
+                      context,
+                      title: 'Withdraw',
+                      icon: Icons.remove_circle,
+                      color: Colors.red,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/withdrawFunds');
+                      },
+                    ),
                   ),
-                ),
+                  // Transactions Button
+                  SizedBox(
+                    width: 150,
+                    child: _buildActionButton(
+                      context,
+                      title: 'Transactions',
+                      icon: Icons.receipt_long,
+                      color: Colors.blue,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/viewTransactions');
+                      },
+                    ),
+                  ),
+                ],
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               // Recent Activity Section
               Padding(
                 padding: const EdgeInsets.only(left: 4.0, bottom: 16.0),
@@ -154,7 +171,7 @@ class ManageWalletPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Recent Activity',
+                          'Recent Transactions',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -164,22 +181,10 @@ class ManageWalletPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/viewTransactions');
-                      },
-                      child: Text(
-                        'View All',
-                        style: TextStyle(
-                          color: Colors.blue.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
-              
+
               // Example Transaction Item
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -190,7 +195,7 @@ class ManageWalletPage extends StatelessWidget {
                 title: const Text('Deposit'),
                 subtitle: const Text('Apr 1, 2025'),
                 trailing: const Text(
-                  '+\$250.00',
+                  '+\ksh 250.00',
                   style: TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
@@ -217,7 +222,7 @@ class ManageWalletPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: secondaryColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

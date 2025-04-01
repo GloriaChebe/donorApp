@@ -178,7 +178,7 @@ void forgotPasswordPopup(BuildContext context) {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => SignInScreen()), // Replace with your sign-in screen widget
+                    MaterialPageRoute(builder: (context) => LoginPage()), // Replace with your sign-in screen widget
                   );
                 },
                 style: ElevatedButton.styleFrom(

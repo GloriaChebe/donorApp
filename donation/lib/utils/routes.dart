@@ -7,11 +7,12 @@ import 'package:flutter_application_1/views/admin/manageUsers.dart';
 import 'package:flutter_application_1/views/admin/manageWallet.dart';
 import 'package:flutter_application_1/views/categories.dart';
 
-import 'package:flutter_application_1/views/homePage.dart';
+import 'package:flutter_application_1/views/home/homePage.dart';
 import 'package:flutter_application_1/views/login.dart';
 import 'package:flutter_application_1/views/nav.dart';
 import 'package:flutter_application_1/views/profile.dart';
 import 'package:flutter_application_1/views/signUp.dart';
+import 'package:flutter_application_1/views/splashScreen.dart';
 import 'package:flutter_application_1/views/status.dart';
 import 'package:get/get.dart';
 
@@ -34,9 +35,9 @@ class Pages {
   static const String manageItems= '/manageItems';
 
   static final routes = [
-    //GetPage(name: splash, page: () => splashScreen()),
-    GetPage(name: signUp, page: () => SignUpScreen()),
-     GetPage(name: login, page: () => SignInScreen()),
+    GetPage(name: splash, page: () => SplashScreen()),
+    GetPage(name: signUp, page: () => SignUpPage()),
+     GetPage(name: login, page: () => LoginPage()),
      GetPage(name: homepage, page: () => HomePage()),
       GetPage(name: navpage, page: () => navPage()),
      GetPage(name: categories, page: () => CategoriesPage()),
