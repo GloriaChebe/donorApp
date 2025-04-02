@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/admin/adminCategories.dart';
 import 'package:flutter_application_1/views/admin/adminPage.dart';
 import 'package:flutter_application_1/views/admin/manageDonations.dart';
 import 'package:flutter_application_1/views/admin/manageItems.dart';
 import 'package:flutter_application_1/views/admin/manageUsers.dart';
 import 'package:flutter_application_1/views/admin/manageWallet.dart';
 import 'package:flutter_application_1/views/categories.dart';
+import 'package:flutter_application_1/views/contactUs.dart';
 
 import 'package:flutter_application_1/views/home/homePage.dart';
 import 'package:flutter_application_1/views/login.dart';
@@ -33,6 +35,8 @@ class Pages {
   static const String manageDonations= '/manageDonations';
   static const String manageWallet= '/manageWallet';
   static const String manageItems= '/manageItems';
+  static const String contactUs= '/contactUs';
+  static const String categoriesAdmin= '/categoriesAdmin';
 
   static final routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -51,6 +55,8 @@ class Pages {
      GetPage(name: manageUsers, page: () => ManageUsersPage()),
      GetPage(name: manageWallet, page: () => ManageWalletPage()),
      GetPage(name: manageItems, page: () => ManageItemsPage()),
+     GetPage(name: contactUs, page: () => ContactUsPage()),
+     GetPage(name: categoriesAdmin, page: () => CategoriesAdmin()),
    
     
   ];

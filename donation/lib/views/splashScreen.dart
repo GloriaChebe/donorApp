@@ -18,8 +18,9 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Text(
               'DonorApp',
               style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontSize: 45,
+                fontWeight: FontWeight.w900,
+                //fontStyle:,
                 color: Colors.white,
               ),
             ),

@@ -3,7 +3,7 @@ import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/widgets/statusWidget.dart';
 
 import 'package:step_progress_indicator/step_progress_indicator.dart' as step_progress;
-import 'package:flutter_application_1/views/message.dart';
+
 
 class Statuspage extends StatefulWidget {
   final String donationId;
@@ -120,23 +120,23 @@ class StatusPage extends State<Statuspage> {
           ),
         ],
       ),
-      // Floating action button to access messages
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MessagesPage(),
-            ),
-          );
-        },
-        backgroundColor: Color.fromARGB(255, 245, 132, 14),
-        child: Icon(
-          Icons.chat,
-          color: appwhiteColor,
-        ),
-        tooltip: 'Messages',
-      ),
+      // // Floating action button to access messages
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => (),
+      //       ),
+      //     );
+      //   },
+      //   backgroundColor: Color.fromARGB(255, 245, 132, 14),
+      //   child: Icon(
+      //     Icons.chat,
+      //     color: appwhiteColor,
+      //   ),
+      //   tooltip: 'Messages',
+      // ),
     );
   }
 

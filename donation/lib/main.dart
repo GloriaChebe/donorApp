@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/link.dart';
+import 'package:flutter_application_1/views/admin/adminCategories.dart';
 import 'package:flutter_application_1/views/admin/adminPage.dart';
 import 'package:flutter_application_1/views/categories.dart';
 import 'package:flutter_application_1/views/login.dart';
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
       ),
       //itialRoute: AppRouting.initialRoute,
      getPages: AppRouting.getPages,
-      home: AdminPage(),
+      home: SplashScreen(),
+      //home: CategoriesAdmin(),
       debugShowCheckedModeBanner: false,
     );
   }

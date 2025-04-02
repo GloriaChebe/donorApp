@@ -1,0 +1,2 @@
+C:/Users/gloss/Desktop/donorApp/donation/android/app/.cxx/Debug/1g2k6923/x86/CMakeFiles/edit_cache.dir
+C:/Users/gloss/Desktop/donorApp/donation/android/app/.cxx/Debug/1g2k6923/x86/CMakeFiles/rebuild_cache.dir

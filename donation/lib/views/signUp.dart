@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -202,10 +205,45 @@ class _SignUpPageState extends State<SignUpPage> {
                           const SizedBox(height: 30),
                           // Sign Up Button
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async{
                               if (_formKey.currentState!.validate()) {
-                                // Handle sign-up logic
-                                Navigator.pushReplacementNamed(context, '/login');
+
+                                http.Response response = await http.post(
+                                  Uri.parse('https://sanerylgloann.co.ke/donorApp/createUser.php'),
+                                  body: {
+                                    'firstName': firstNameController.text,
+                                    'lastName': lastNameController.text,
+                                    'email': emailController.text,
+                                    'phoneNumber': phoneController.text,
+                                    'password': passwordController.text,
+                                  },
+                                );
+                                if(response.statusCode == 200) {
+                                  // Handle successful sign-up
+                                  var res=jsonDecode(response.body);
+
+                                  if(res['success'] == 1) {
+Navigator.pushReplacementNamed(context, '/login');
+                                    // User created successfully
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('User Created')),
+                                          
+                                    );
+                                  } else {
+                                    // User already exists
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error Ocurred')),
+                                    );
+                                  }
+                                 
+                                  
+                                } else {
+                                  // Handle error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Sign Up Failed')),
+                                  );
+                                }
+                            
                               }
                             },
                             style: ElevatedButton.styleFrom(

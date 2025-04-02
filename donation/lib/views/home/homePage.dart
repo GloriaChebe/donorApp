@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/itemController.dart';
 import 'package:flutter_application_1/models/donatedProduct.dart';
+import 'package:flutter_application_1/models/item.dart';
 import 'package:flutter_application_1/models/urgentProduct.dart';
 
 import 'package:flutter_application_1/views/donate.dart';
@@ -7,14 +9,13 @@ import 'package:flutter_application_1/views/home/podiumChart.dart';
 import 'package:flutter_application_1/views/payment.dart';
 import 'package:flutter_application_1/views/categories.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:get_storage/get_storage.dart';
+var storage= GetStorage();
 
 class HomePage extends StatelessWidget {
-  final List<UrgentProduct> urgentProducts = [
-    UrgentProduct(name: "Money", imageUrl: "assets/images/money1.jpeg"),
-    UrgentProduct(name: "Mangoes", imageUrl: "assets/images/mangoes.png"),
-    UrgentProduct(name: "Cow skin", imageUrl: "assets/images/skin.png"),
-    UrgentProduct(name: "Solar Panels", imageUrl: "assets/images/solar_panels.png"),
-  ];
+ String role =storage.read('role')??"";
+    String firstName =storage.read('firstName')??"";
+ ItemController itemController = ItemController();
 
   final List<DonatedProduct> topDonatedProducts = [
     DonatedProduct(name: "Oranges"),
@@ -24,13 +25,28 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //itemController.fetchDonationItems();
+   
+    print("home"+role);
+    print("home"+firstName);
+    itemController.fetchUrgentDonationItems();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Welcome Gloria!",
+          "Welcome $firstName!",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
+        actions: [
+         if(role.compareTo("1")==0) IconButton(
+            icon: Icon(Icons.admin_panel_settings, color: appwhiteColor),
+            onPressed: () {
+              Navigator.pushNamed(context, '/admin');
+            },
+          ),
+         
+        ],
+       
         backgroundColor: primaryColor,
         elevation: 0,
       ),
@@ -49,13 +65,13 @@ class HomePage extends StatelessWidget {
 
             // Urgent Products - Horizontal Scroll
             SizedBox(
-              height: 200,
+              height: 201,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: 8),
-                itemCount: urgentProducts.length,
+                itemCount: itemController.urgentItems.length,
                 itemBuilder: (context, index) {
-                  return _buildUrgentProductCard(context, urgentProducts[index]);
+                  return _buildUrgentProductCard(context, itemController.urgentItems[index]);
                 },
               ),
             ),
@@ -113,9 +129,10 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildUrgentProductCard(BuildContext context, UrgentProduct product) {
+  Widget _buildUrgentProductCard(BuildContext context, DonationItem product) {
     return Container(
-      width: 140,
+      width: 145,
+      
       margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -140,8 +157,7 @@ class HomePage extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                product.imageUrl,
+              child: Image.network('https://sanerylgloann.co.ke/donorApp/itemImages/'+product.image,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(Icons.image, color: Colors.blue);

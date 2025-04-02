@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+var storage=GetStorage();
 
 class LoginPage extends StatefulWidget {
   @override
@@ -148,8 +153,50 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(height: 20),
                           // Log In Button
                           ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacementNamed(context, '/navpage');
+                            onPressed: () async{
+                               http.Response response = await http.post(
+                                  Uri.parse('https://sanerylgloann.co.ke/donorApp/readUser.php'),
+                                  body: {
+                                    
+                                    'email': emailController.text,
+                                    
+                                    'password': passwordController.text,
+                                  },
+                                );
+                                print(response.body);
+                                if(response.statusCode == 200) {
+                                  // Handle successful login
+                                  var res=jsonDecode(response.body);
+
+                                  print(res['success']);
+
+                                  if(res['success'] == 1) {
+                                    storage.write("role", res['role']);
+                                    storage.write("firstName", res['firstName']);
+                                    print(res['role']);
+                                    print(res['firstName']);
+Navigator.pushReplacementNamed(context, '/navpage');
+                                    // login successfully
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('login successful')),
+                                          
+                                    );
+                                  } else {
+                                    
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('invalid email/password')),
+                                    );
+                                  }
+                                
+                                  
+                                 
+                                } else {
+                                  // Handle error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('login Failed')),
+                                  );
+                                }
+                              //Navigator.pushReplacementNamed(context, '/navpage');
                               if (_formKey.currentState!.validate()) {
                                 // Handle login logic
                                 

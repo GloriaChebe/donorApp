@@ -389,16 +389,16 @@ class _DonatePageState extends State<DonatePage> {
                               ],
                             ),
                             SizedBox(height: 16),
-                            OutlinedButton.icon(
-                              icon: Icon(Icons.map_outlined),
-                              label: Text('View on Map'),
-                              onPressed: () {
-                                // Open map with location
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: primaryColor,
-                              ),
-                            ),
+                            // OutlinedButton.icon(
+                            //   icon: Icon(Icons.map_outlined),
+                            //   label: Text('View on Map'),
+                            //   onPressed: () {
+                            //     // Open map with location
+                            //   },
+                            //   style: OutlinedButton.styleFrom(
+                            //     foregroundColor: primaryColor,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
