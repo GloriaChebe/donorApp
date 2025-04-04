@@ -123,7 +123,7 @@ class AdminPage extends StatelessWidget {
                     title: 'Manage Items',
                     icon: Icons.inventory,
                     onTap: () {
-                      Navigator.pushNamed(context, '/manageItems');
+                      Navigator.pushNamed(context, '/categoriesAdmin');
                     },
                   ),
                   _buildAdminCard(

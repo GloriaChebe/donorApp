@@ -4,6 +4,7 @@ import 'package:flutter_application_1/views/admin/adminCategories.dart';
 import 'package:flutter_application_1/views/admin/adminPage.dart';
 import 'package:flutter_application_1/views/categories.dart';
 import 'package:flutter_application_1/views/login.dart';
+import 'package:flutter_application_1/views/profileDetails.dart';
 
 import 'package:flutter_application_1/views/signUp.dart';
 import 'package:flutter_application_1/views/splashScreen.dart';

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/itemController.dart';
 import 'package:flutter_application_1/models/donatedProduct.dart';
@@ -155,15 +156,21 @@ class HomePage extends StatelessWidget {
               color: Colors.blue.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network('https://sanerylgloann.co.ke/donorApp/itemImages/'+product.image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.image, color: Colors.blue);
-                },
-              ),
-            ),
+            // child: ClipRRect(
+            //   borderRadius: BorderRadius.circular(8),
+            //   child: Image.network('https://sanerylgloann.co.ke/donorApp/itemImages/'+product.image,
+            //     fit: BoxFit.cover,
+            //     errorBuilder: (context, error, stackTrace) {
+            //       return Icon(Icons.image, color: Colors.blue);
+            //     },
+            //   ),
+            // ),
+            child: CachedNetworkImage(
+       imageUrl: "http://via.placeholder.com/350x150",
+       progressIndicatorBuilder: (context, url, downloadProgress) => 
+               CircularProgressIndicator(value: downloadProgress.progress),
+       errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
           ),
           SizedBox(height: 8),
           Text(

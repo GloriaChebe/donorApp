@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/views/contactUs.dart';
+import 'package:flutter_application_1/views/profileDetails.dart';
 import 'package:flutter_application_1/views/terms.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -90,7 +91,10 @@ class ProfilePage extends StatelessWidget {
                   "My Profile",
                   Colors.blue,
                   () {
-                    // Navigate to My Profile page
+                     Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfileDetailsPage()),
+                    ); 
                   },
                 ),
                 SizedBox(height: 10),

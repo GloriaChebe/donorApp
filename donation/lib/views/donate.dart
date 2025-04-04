@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/configs/constants.dart' as color;
 import 'package:flutter_application_1/views/status.dart';
 
 import 'package:get/get.dart';
@@ -35,14 +36,15 @@ class _DonatePageState extends State<DonatePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryColor = Color(0xFF1565C0); // Deep blue color
+    final primaryColor = color.primaryColor; // Deep blue color
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
         elevation: 0,
         title: Text(
           'Donate ${widget.itemName}',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold,color: appwhiteColor),
         ),
         backgroundColor: primaryColor,
         actions: [
@@ -172,38 +174,7 @@ class _DonatePageState extends State<DonatePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Section title
-                    Text(
-                      'Donor Information',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-              
-                // Phone field
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        prefixIcon: Icon(Icons.phone_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      ),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
-                    ),
+               
                     SizedBox(height: 24),
 
                     // Pickup/Dropoff section
@@ -388,17 +359,6 @@ class _DonatePageState extends State<DonatePage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 16),
-                            // OutlinedButton.icon(
-                            //   icon: Icon(Icons.map_outlined),
-                            //   label: Text('View on Map'),
-                            //   onPressed: () {
-                            //     // Open map with location
-                            //   },
-                            //   style: OutlinedButton.styleFrom(
-                            //     foregroundColor: primaryColor,
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
@@ -483,7 +443,7 @@ class _DonatePageState extends State<DonatePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Donation Submitted'),
+          title: Text('Your donation request has been submitted!',),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -500,12 +460,7 @@ class _DonatePageState extends State<DonatePage> {
                 ),
               ),
               SizedBox(height: 16),
-              Text(
-                'Your donation request has been submitted!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
+             
               Text(
                 'Donation ID: $_donationId',
                 textAlign: TextAlign.center,
@@ -513,16 +468,12 @@ class _DonatePageState extends State<DonatePage> {
               ),
               SizedBox(height: 16),
               Text(
-                'Your donation is pending approval from our administrators. You can check the status of your donation at any time.',
+                'Your donation is pending approval from our administrators. You can check the status of your donation on the app at any time.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey.shade700),
               ),
               SizedBox(height: 16),
-              Text(
-                'A confirmation email has been sent to your email address.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-              ),
+              
             ],
           ),
           actions: [
@@ -533,13 +484,13 @@ class _DonatePageState extends State<DonatePage> {
               },
             ),
             ElevatedButton(
-              child: Text('View Status'),
+              child: Text('View Status',style: TextStyle(color: appwhiteColor),),
               onPressed: () {
                 Navigator.of(context).pop();
                 _navigateToDonationStatus();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF1565C0),
+                backgroundColor: primaryColor,
               ),
             ),
           ],
@@ -580,17 +531,10 @@ class _DonatePageState extends State<DonatePage> {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'All donated items should be in good, usable condition. Your donations help support community members in need and contribute to our sustainability efforts.',
+                  'All donated items should be in good, usable condition. Your donations help support continuing research projects and contribute to our sustainability efforts.',
                 ),
                 SizedBox(height: 16),
-                Text(
-                  'Tax Benefits',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Your donation may qualify for a tax deduction. You will receive a receipt after your donation is complete.',
-                ),
+                
               ],
             ),
           ),
@@ -648,11 +592,11 @@ class _DonatePageState extends State<DonatePage> {
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
               SizedBox(height: 16),
-              Text(
-                'A confirmation email has been sent to your email address.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-              ),
+              // Text(
+              //   'A confirmation email has been sent to your email address.',
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              // ),
             ],
           ),
           actions: [

@@ -1,12 +1,30 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/itemController.dart';
 import 'package:flutter_application_1/views/donate.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
-class CategoriesAdmin extends StatelessWidget {
-  final ItemController itemController = Get.put(ItemController());
+String? selectedCategory = 'Food';
+  String? urgency = 'Urgent';
+   final ItemController itemController = Get.put(ItemController());
+    
+    File? selectedImage;
+    final TextEditingController nameController = TextEditingController();
 
+class CategoriesAdmin extends StatefulWidget {
+  @override
+  _CategoriesAdminState createState() => _CategoriesAdminState();
+}
+
+class _CategoriesAdminState extends State<CategoriesAdmin> {
+ 
+  //final CategoryController categoryController = Get.put(CategoryController());
+  //final TextEditingController nameController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,8 +96,8 @@ class CategoriesAdmin extends StatelessWidget {
       
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          
-          _showAddItemDialog(context);
+          print('clicked'); 
+          _showAddItemDialog(context); // Call the dialog method
         },
         backgroundColor: primaryColor,
         child: Icon(Icons.add, color: Colors.white),
@@ -89,67 +107,199 @@ class CategoriesAdmin extends StatelessWidget {
 
   
   void _showAddItemDialog(BuildContext context) {
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController categoryController = TextEditingController();
-    final TextEditingController imageController = TextEditingController();
+    
+  
+
+    Future<void> _pickImage() async {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          selectedImage = File(pickedFile.path);
+        });
+      }
+    }
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add New Item'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    border: OutlineInputBorder(),
-                  ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add New Item'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    //categories
+                    DropdownButtonFormField<String>(
+                      
+                      value: selectedCategory,
+                      items: ['Food', 'Textiles', 'Engineering', 'Leather']
+                          .map((selectedCategory) {
+                        return DropdownMenuItem(
+                          value: selectedCategory,
+                          child: Text(selectedCategory),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value!;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Category',
+                        border: OutlineInputBorder(),
+                      ),
+                      hint: Text('Select a category'),
+                    ),
+                    SizedBox(height: 16),
+
+                    //subcategory
+                    DropdownButtonFormField<String>(
+                      value: urgency,
+                      items: ['Urgent', 'Normal']
+                          .map((urgency) {
+                        return DropdownMenuItem(
+                          value: urgency,
+                          child: Text(urgency),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          urgency = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'subCategory',
+                        border: OutlineInputBorder(),
+                      ),
+                      hint: Text('Select a subCategory'),
+                    ),
+                    SizedBox(height: 16),
+
+                    // Image picker section
+                    Row(
+                      children: [
+                        // Image display container
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: selectedImage != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      selectedImage!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      'No image selected',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+
+                        // Upload button
+                        ElevatedButton(
+                          onPressed: () async {
+                            await _pickImage();
+                            setState(() {});
+                          },
+                          child: Text('Upload',style: TextStyle(color: appwhiteColor),),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: categoryController,
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(),
-                  ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('Cancel'),
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: imageController,
-                  decoration: InputDecoration(
-                    labelText: 'Image ',
-                    border: OutlineInputBorder(),
+                ElevatedButton(
+                  onPressed: () {
+                    
+                  
+  addItems(context);
+
+                    // Close the dialog after adding the item
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Add',
+                    style: TextStyle(color: appwhiteColor),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: appwhiteColor,
                   ),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-               
-                
-                Navigator.of(context).pop();
-              },
-              child: Text('Add', style: TextStyle(color: appwhiteColor),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: appwhiteColor,
-              ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
+  }
+  
+ Future<void> addItems(context) async {
+    if (selectedImage == null) {
+      print("No image selected.");
+      return;
+    }
+
+    final url = Uri.parse(
+      'https://sanerylgloann.co.ke/donorApp/createItems.php',
+    ); // Update with your API endpoint
+
+    var request = http.MultipartRequest("POST", url);
+
+    // Add text fields
+    request.fields['name'] = nameController.text;
+    request.fields['category'] = selectedCategory ?? '';
+    request.fields['mostRequired'] = urgency??'' ;
+
+    // Attach image file
+    var imageFile = await http.MultipartFile.fromPath(
+      'image',
+      selectedImage!.path,
+    );
+    request.files.add(imageFile);
+
+    // Send request
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("Item added successfully");
+      Navigator.of(context).pop(); // Close the popup
+    } else {
+      print("Failed to add item");
+    }
   }
 }
 
@@ -244,7 +394,7 @@ class _ItemCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
                 image: DecorationImage(
-                  image: NetworkImage('https://sanerylgloann.co.ke/donorApp/itemImages/' + item.image),
+                  image: CachedNetworkImageProvider('https://sanerylgloann.co.ke/donorApp/itemImages/' + item.image),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -276,8 +426,23 @@ class _ItemCard extends StatelessWidget {
                       
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            //Get.to(() => );
+                          onPressed: () async {
+                            http.Response response = await http.post(
+                              Uri.parse('https://sanerylgloann.co.ke/donorApp/deleteItem.php'),
+                              body: {
+                                'itemID': item.itemsID,
+                              },
+                            );
+                            if (response.statusCode == 200) {
+                              // Handle successful deletion
+                              print('Item deleted successfully');
+                              itemController.fetchDonationItems();
+                              Get.snackbar("Success", "Item deleted successfully");
+                            } else {
+                              // Handle error
+                              print('Failed to delete item');
+                              Get.snackbar("Error", "Failed to delete item");
+                            }
                           },
                           child: Text(
                             'Delete',
@@ -399,4 +564,7 @@ class ItemSearchDelegate extends SearchDelegate<String> {
       },
     );
   }
+
+
+ 
 }

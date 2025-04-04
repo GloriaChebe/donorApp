@@ -200,7 +200,7 @@ class _ItemCard extends StatelessWidget {
                       onPressed: () {
                         Get.to(() => DonatePage(
                               itemName: item.name,
-                              itemImage: item.imageUrl,
+                              itemImage: item.image,
                               itemCategory: item.category,
                             ));
                       },
