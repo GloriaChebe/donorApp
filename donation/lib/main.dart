@@ -9,9 +9,11 @@ import 'package:flutter_application_1/views/profileDetails.dart';
 import 'package:flutter_application_1/views/signUp.dart';
 import 'package:flutter_application_1/views/splashScreen.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'views/nav.dart';
 
-void main() {
+void main() async{
+await GetStorage.init();
   runApp(MyApp());
 }
 

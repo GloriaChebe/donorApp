@@ -1,22 +1,35 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/configs/constants.dart' as color;
+import 'package:flutter_application_1/models/item.dart';
 import 'package:flutter_application_1/views/status.dart';
 
 import 'package:get/get.dart';
 
 import 'dart:math' as math;
 
+import 'package:get/get_connect/http/src/response/response.dart' as get_response;
+import 'package:get_storage/get_storage.dart';
+
+import 'package:http/http.dart' as http;
+
+var storage = GetStorage();
 class DonatePage extends StatefulWidget {
   final String itemName;
-  final String itemImage; // Add image URL or asset path
+  final String itemImage; 
   final String itemCategory;
+   String itemsID;
 
   DonatePage({
     required this.itemName, 
     this.itemImage = '', 
-    this.itemCategory = 'General'
+    this.itemCategory = 'General',
+    required this.itemsID , 
+    
   });
 
   @override
@@ -26,12 +39,17 @@ class DonatePage extends StatefulWidget {
 class _DonatePageState extends State<DonatePage> {
   final _formKey = GlobalKey<FormState>();
   int _quantity = 1;
-  String _pickupOption = 'Schedule Pickup';
+  String _pickupOption = 'Schedule a Pickup';
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _additionalNotesController = TextEditingController();
+  
   String? _donationId;
+  
+  get donationData => null;
 
   @override
   Widget build(BuildContext context) {
@@ -76,11 +94,12 @@ class _DonatePageState extends State<DonatePage> {
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: widget.itemImage.isNotEmpty
+                    child: 
+                    widget.itemImage.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              widget.itemImage,
+                            child: Image.network(
+                              'https://sanerylgloann.co.ke/donorApp/itemImages/${widget.itemImage}',
                               fit: BoxFit.cover,
                             ),
                           )
@@ -205,6 +224,7 @@ class _DonatePageState extends State<DonatePage> {
                             onChanged: (value) {
                               setState(() {
                                 _pickupOption = value!;
+                                print(_pickupOption);
                               });
                             },
                           ),
@@ -218,6 +238,7 @@ class _DonatePageState extends State<DonatePage> {
                             onChanged: (value) {
                               setState(() {
                                 _pickupOption = value!;
+                                print(_pickupOption);
                               });
                             },
                           ),
@@ -229,6 +250,7 @@ class _DonatePageState extends State<DonatePage> {
                     // Address field
                     if (_pickupOption == 'Schedule Pickup') ...[
                       TextFormField(
+                        controller: _addressController,
                         decoration: InputDecoration(
                           labelText: 'Address',
                           prefixIcon: Icon(Icons.home_outlined),
@@ -253,6 +275,7 @@ class _DonatePageState extends State<DonatePage> {
                           Expanded(
                             child: TextFormField(
                               controller: _dateController,
+                          
                               decoration: InputDecoration(
                                 labelText: 'Preferred Date',
                                 prefixIcon: Icon(Icons.calendar_today),
@@ -270,8 +293,10 @@ class _DonatePageState extends State<DonatePage> {
                                 );
                                 if (picked != null) {
                                   setState(() {
+                                   
                                     _selectedDate = picked;
                                     _dateController.text = "${picked.day}/${picked.month}/${picked.year}";
+                                     print('_selectedDate');
                                   });
                                 }
                               },
@@ -304,6 +329,7 @@ class _DonatePageState extends State<DonatePage> {
                                   setState(() {
                                     _selectedTime = picked;
                                     _timeController.text = "${picked.hour}:${picked.minute.toString().padLeft(2, '0')}";
+                                    print(_selectedTime);
                                   });
                                 }
                               },
@@ -342,7 +368,7 @@ class _DonatePageState extends State<DonatePage> {
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    '123 Charity Street, Community Center, City',
+                                    '123 popo road, South C, Nairobi',
                                     style: TextStyle(fontSize: 14),
                                   ),
                                 ),
@@ -366,26 +392,84 @@ class _DonatePageState extends State<DonatePage> {
                     SizedBox(height: 16),
 
                     // Additional notes
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Additional Notes (Optional)',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        contentPadding: EdgeInsets.all(16),
-                      ),
-                      maxLines: 3,
-                    ),
+                   TextFormField(
+                         controller: _additionalNotesController, // Attach the controller
+                           decoration: InputDecoration(
+                           labelText: 'Additional Notes (Optional)',
+                             border: OutlineInputBorder(
+                             borderRadius: BorderRadius.circular(8),
+                                 ),
+                                 contentPadding: EdgeInsets.all(16),
+                                    ),
+                                       maxLines: 3,
+                                         ),
                     SizedBox(height: 24),
 
                     // Submit button
                     Container(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _submitDonation();
-                          }
+                        onPressed: () async {
+                          
+                              if (_formKey.currentState!.validate()) {
+
+                                http.Response response = await http.post(
+                                  Uri.parse('https://sanerylgloann.co.ke/donorApp/createDonations.php'),
+                                  body: {
+                                   ' userID': storage.read("userID")??'',
+                                    
+                                    'itemsID': widget.itemsID,
+                                    'address':  _pickupOption.compareTo('Schedule Pickup')==0? _addressController.text : '',
+                                     'deliveryMethod':_pickupOption,
+                                    'prefferedDate': _selectedDate != null ? "${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}" : '',
+                                    'prefferedTime': _selectedTime != null ? "${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}" : '',
+                                    
+                                   'quantity': _quantity.toString(),
+                                   'status': 'Pending',
+                                   'comments': _additionalNotesController.text,
+
+
+                                  }
+                                );
+                                print('Response: ${response.body}');
+                                if(response.statusCode == 200) {
+                                  
+                                  var res=jsonDecode(response.body);
+                                  
+                                  print('Response: $res');
+
+                                  if(res['success'] == 1) {
+                                    
+                                     Get.to(() => Statuspage(
+              donationId: '0',
+              itemName: widget.itemName,
+              quantity: _quantity,
+              pickupOption: _pickupOption,
+              currentStatus: 'Pending',
+            ));
+                                 
+                                         
+                                    
+                                  } else {
+                                    
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error Ocurred')),
+                                    );
+                                  }
+                                 
+                                  
+                                } 
+                                else {
+                                 
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(' Failed')),
+                                  );
+                                }
+                            
+                              }
+                          // if (_formKey.currentState!.validate()) {
+                          //   _submitDonation();
+                          // }
                         },
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
@@ -501,11 +585,12 @@ class _DonatePageState extends State<DonatePage> {
 
   void _navigateToDonationStatus() {
     Get.to(() => Statuspage(
-      donationId: _donationId!,
+      donationId: '0',
       itemName: widget.itemName,
       quantity: _quantity,
       pickupOption: _pickupOption, currentStatus: '',
     ));
+    
   }
 
   void _showDonationInfo(BuildContext context) {
@@ -600,12 +685,12 @@ class _DonatePageState extends State<DonatePage> {
             ],
           ),
           actions: [
-            TextButton(
-              child: Text('Share'),
-              onPressed: () {
-                // Handle sharing
-              },
-            ),
+            // TextButton(
+            //   child: Text('Share'),
+            //   onPressed: () {
+            //     // Handle sharing
+            //   },
+            // ),
             ElevatedButton(
               child: Text('Done'),
               onPressed: () {

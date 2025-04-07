@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/controllers/donationController.dart';
+import 'package:flutter_application_1/models/donationModel.dart';
+import 'package:http/http.dart' as http;
+ final DonationController donationController=DonationController();
 
 class ManageDonationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    donationController.fetchDonations(); // Fetch donations when the page is built
     return DefaultTabController(
       length: 4, 
       child: Scaffold(
@@ -39,9 +44,13 @@ class ManageDonationsPage extends StatelessWidget {
             children: [
               // Pending Donations Tab
               DonationList(
-                donations: _getPendingDonations(),
-                onApprove: (donation) {
-                  // Handle approve action
+                donations: donationController.donations.where((donation) => donation.status == 'Pending').toList(),
+                onApprove: (donation) async{
+                //  var res=await http.get(
+                //     Uri.parse('https://example.com/approveDonation?donationId=${donation.donationId}'),
+                    
+                //   );
+                  // Handle approve actio
                 },
                 onReject: (donation) {
                   // Handle reject action
@@ -51,7 +60,7 @@ class ManageDonationsPage extends StatelessWidget {
               ),
               // Approved/Rejected Donations Tab
               DonationList(
-                donations: _getApprovedDonations(),
+                donations: donationController.donations.where((donation) => donation.status == 'Approved').toList(),
                 onApprove: null, // No "Approve" for already approved donations
                 onReject: null, // No "Reject" for already approved donations
                 onMarkAsPickedUp: (donation) {
@@ -61,7 +70,7 @@ class ManageDonationsPage extends StatelessWidget {
               ),
               // Picked Up Donations Tab
               DonationList(
-                donations: _getPickedUpDonations(),
+                donations: donationController.donations.where((donation) => donation.status == 'PickedUp').toList(),
                 onApprove: null,
                 onReject: null,
                 onMarkAsPickedUp: null, // No "Mark as Picked Up" for picked up donations
@@ -71,7 +80,7 @@ class ManageDonationsPage extends StatelessWidget {
               ),
               // Completed Donations Tab
               DonationList(
-                donations: _getCompletedDonations(),
+                donations: donationController.donations.where((donation) => donation.status == 'Completed').toList(),
                 onApprove: null,
                 onReject: null,
                 onMarkAsPickedUp: null,
@@ -84,35 +93,7 @@ class ManageDonationsPage extends StatelessWidget {
     );
   }
 
-  // Mock data for Pending Donations
-  List<Map<String, String>> _getPendingDonations() {
-    return [
-      {
-        'donorName': 'John Doe',
-        'donationType': 'Food',
-        'date': '2025-04-01',
-        'status': 'Pending',
-      },
-      {
-        'donorName': 'Jane Smith',
-        'donationType': 'Money',
-        'date': '2025-03-30',
-        'status': 'Pending',
-      },
-    ];
-  }
-
-  // Mock data for Approved Donations
-  List<Map<String, String>> _getApprovedDonations() {
-    return [
-      {
-        'donorName': 'Alice Johnson',
-        'donationType': 'Textiles',
-        'date': '2025-03-28',
-        'status': 'Approved',
-      },
-    ];
-  }
+  
 
   // Mock data for Picked Up Donations
   List<Map<String, String>> _getPickedUpDonations() {
@@ -140,11 +121,11 @@ class ManageDonationsPage extends StatelessWidget {
 }
 
 class DonationList extends StatelessWidget {
-  final List<Map<String, String>> donations;
-  final Function(Map<String, String>)? onApprove;
-  final Function(Map<String, String>)? onReject;
-  final Function(Map<String, String>)? onMarkAsPickedUp;
-  final Function(Map<String, String>)? onMarkAsCompleted;
+  final List<Donation> donations ;
+  final Function(String)? onApprove;
+  final Function( String)? onReject;
+  final Function( String)? onMarkAsPickedUp;
+  final Function(String)? onMarkAsCompleted;
 
   DonationList({
     required this.donations,
@@ -157,9 +138,9 @@ class DonationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: donations.length,
+      itemCount:donationController.donations.length,
       itemBuilder: (context, index) {
-        final donation = donations[index];
+        final donation = donationController.donations[index];
         return Card(
           margin: EdgeInsets.all(8.0),
           elevation: 4,
@@ -172,29 +153,29 @@ class DonationList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Donor: ${donation['donorName']}',
+                  'Donor: ${donation.firstName} ${donation.lastName}',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Donation Type: ${donation['donationType']}',
+                  'Donation Type: ${donation.deliveryMethod}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Date: ${donation['date']}',
+                  'Date: ${donation.preferredDate}',
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Status: ${donation['status']}',
+                  'Status: ${donation.status}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: donation['status'] == 'Pending'
+                    color: donation.status == 'Pending'
                         ? Colors.orange
-                        : donation['status'] == 'Approved'
+                        : donation.status == 'Approved'
                             ? Colors.green
-                            : donation['status'] == 'Picked Up'
+                            : donation.status == 'Picked Up'
                                 ? Colors.blue
                                 : Colors.black,
                   ),
@@ -205,9 +186,9 @@ class DonationList extends StatelessWidget {
                   children: [
                     if (onApprove != null)
                       ElevatedButton(
-                        onPressed: () => onApprove!(donation),
+                        onPressed: () => onApprove!(donation.donationId),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor: Color.fromARGB(255, 4, 101, 22),
                         ),
                         child: Text(
                           'Approve',
@@ -218,9 +199,9 @@ class DonationList extends StatelessWidget {
                       SizedBox(width: 8),
                     if (onReject != null)
                       ElevatedButton(
-                        onPressed: () => onReject!(donation),
+                        onPressed: () => onReject!(donation.donationId),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:secondaryColor,
+                          backgroundColor:Color.fromARGB(255, 232, 12, 12),
                         ),
                         child: Text(
                           'Reject',
@@ -231,9 +212,9 @@ class DonationList extends StatelessWidget {
                       SizedBox(width: 8),
                     if (onMarkAsPickedUp != null)
                       ElevatedButton(
-                        onPressed: () => onMarkAsPickedUp!(donation),
+                        onPressed: () => onMarkAsPickedUp!(donation.donationId),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor:secondaryColor ,
                         ),
                         child: Text(
                           'Mark as Picked Up',
@@ -244,7 +225,7 @@ class DonationList extends StatelessWidget {
                       SizedBox(width: 8),
                     if (onMarkAsCompleted != null)
                       ElevatedButton(
-                        onPressed: () => onMarkAsCompleted!(donation),
+                        onPressed: () => onMarkAsCompleted!(donation.donationId),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: secondaryColor,
                         ),

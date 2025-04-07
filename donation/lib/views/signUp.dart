@@ -223,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   var res=jsonDecode(response.body);
 
                                   if(res['success'] == 1) {
-Navigator.pushReplacementNamed(context, '/login');
+                                     Navigator.pushReplacementNamed(context, '/login');
                                     // User created successfully
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('User Created')),

@@ -36,6 +36,7 @@ class Pages {
   static const String contactUs= '/contactUs';
   static const String categoriesAdmin= '/categoriesAdmin';
   static const String profileDetails= '/profileDetails';
+  
 
   static final routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -44,7 +45,7 @@ class Pages {
      GetPage(name: homepage, page: () => HomePage()),
       GetPage(name: navpage, page: () => navPage()),
      GetPage(name: categories, page: () => CategoriesPage()),
-     //GetPage(name: status, page: () => StatusPage()),
+    // GetPage(name: status, page: () => StatusPage()),
      GetPage(name: profile, page: () => ProfilePage()),
      GetPage(name: admin, page: () => AdminPage()),
      GetPage(name: manageDonations, page: () => ManageDonationsPage()),

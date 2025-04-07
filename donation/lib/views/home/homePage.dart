@@ -16,6 +16,7 @@ var storage= GetStorage();
 class HomePage extends StatelessWidget {
  String role =storage.read('role')??"";
     String firstName =storage.read('firstName')??"";
+       String userID =storage.read('userID')??"";
  ItemController itemController = ItemController();
 
   final List<DonatedProduct> topDonatedProducts = [
@@ -30,6 +31,7 @@ class HomePage extends StatelessWidget {
    
     print("home"+role);
     print("home"+firstName);
+     print("home"+userID);
     itemController.fetchUrgentDonationItems();
     return Scaffold(
       appBar: AppBar(
@@ -155,6 +157,8 @@ class HomePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
+              
+              
             ),
             // child: ClipRRect(
             //   borderRadius: BorderRadius.circular(8),
@@ -166,7 +170,8 @@ class HomePage extends StatelessWidget {
             //   ),
             // ),
             child: CachedNetworkImage(
-       imageUrl: "http://via.placeholder.com/350x150",
+              fit: BoxFit.cover,
+       imageUrl: "https://sanerylgloann.co.ke/donorApp/itemImages/"+product.image,
        progressIndicatorBuilder: (context, url, downloadProgress) => 
                CircularProgressIndicator(value: downloadProgress.progress),
        errorWidget: (context, url, error) => Icon(Icons.error),
@@ -190,7 +195,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DonatePage(itemName: product.name),
+                    builder: (context) => DonatePage(itemName: product.name,itemsID: product.itemsID,  ),
                   ),
                 );
               }

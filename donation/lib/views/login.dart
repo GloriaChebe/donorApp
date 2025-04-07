@@ -173,9 +173,11 @@ class _LoginPageState extends State<LoginPage> {
                                   if(res['success'] == 1) {
                                     storage.write("role", res['role']);
                                     storage.write("firstName", res['firstName']);
+                                    storage.write("userID", res['userID']);
                                     print(res['role']);
                                     print(res['firstName']);
-Navigator.pushReplacementNamed(context, '/navpage');
+                                    print(res['userID']);
+                                    Navigator.pushReplacementNamed(context, '/navpage');
                                     // login successfully
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('login successful')),

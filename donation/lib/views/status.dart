@@ -60,19 +60,7 @@ class StatusPage extends State<Statuspage> {
             },
           ),
           SizedBox(height: 20),
-          // Second StatusCard for pickup option details
-          StatusCard(
-            donationId: widget.donationId,
-            currentStatus: 'Approved',
-            itemName: 'Banana Stems',
-            quantity: 1,
-            pickupOption: widget.pickupOption,
-            pickupDate: widget.pickupDate,
-            pickupTime: widget.pickupTime,
-            showFullDetails: true, // No toggle needed for this card
-            onToggleDetails: () {}, // Empty callback
-          ),
-          // Full Details Section
+          
           Visibility(
             visible: _showFullDetails,
             child: Expanded(
@@ -166,7 +154,7 @@ class StatusPage extends State<Statuspage> {
       case 'Completed':
         return 'Your donation process has been completed. Thank you for your generosity and support!';
       case 'Rejected':
-        return 'Unfortunately, your donation request could not be accepted at this time. Please check messages for more details.';
+        return 'Unfortunately, your donation request could not be accepted at this time.';
       default:
         return 'Status information not available. Please contact administrator for more details.';
     }

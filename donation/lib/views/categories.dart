@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/item.dart';
+import 'package:flutter_application_1/views/donate.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../configs/constants.dart';
 import '../controllers/itemController.dart';
-import 'donate.dart';
+
+//var storage=GetStorage();
 
 class CategoriesPage extends StatelessWidget {
   final ItemController itemController = Get.put(ItemController());
@@ -148,9 +152,11 @@ class _ItemGrid extends StatelessWidget {
 
 // Item Card Widget
 class _ItemCard extends StatelessWidget {
-  final dynamic item;
+  final DonationItem item;
 
   _ItemCard({required this.item});
+  
+  get itemsID => null;
 
   @override
   Widget build(BuildContext context) {
@@ -198,10 +204,14 @@ class _ItemCard extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
+                        //print body passed
+                        print('Item ID: ${item.itemsID}');
+                        //storage.write('itemsID', itemsID);
                         Get.to(() => DonatePage(
                               itemName: item.name,
                               itemImage: item.image,
                               itemCategory: item.category,
+                              itemsID: item.itemsID,
                             ));
                       },
                       child: Text(
@@ -212,6 +222,7 @@ class _ItemCard extends StatelessWidget {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
+
                         backgroundColor: primaryColor,
                         padding: EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
