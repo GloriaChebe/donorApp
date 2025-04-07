@@ -6,15 +6,19 @@ import 'package:http/http.dart' as http;
 
 class DonationController extends GetxController {
   var donations = <Donation>[].obs;
+  
   var isLoading = false.obs;
+
+  
   
 
-  Future<void> fetchDonations() async {
+  Future<void> fetchDonations(status) async {
     try {
       isLoading(true);
       final response = await http.get(
-        Uri.parse('https://sanerylgloann.co.ke/donorApp/readDonations.php'),
+        Uri.parse('https://sanerylgloann.co.ke/donorApp/readDonations.php?status=$status'),
       );
+      print(response.body);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -22,14 +26,14 @@ class DonationController extends GetxController {
         if (jsonData['success'] == 1) {
           final List<dynamic> data = jsonData['data'];
 
-          donations.value = data.map((item) {
+            donations.value = data.map((item) {
             return Donation(
               userID: item['userID'] ?? '',
               firstName: item['firstName'] ?? '',
               lastName: item['lastName'] ?? '',
               category: item['category'] ?? '',
               name: item['name'] ?? '',
-              donationId: item['donationsID'] ?? '',
+              donationsID: item['donationsID'] ?? '',
               itemsID: item['itemsID'] ?? '',
               address: item['address'] ?? '',
               deliveryMethod: item['deliveryMethod'] ?? '',
@@ -40,6 +44,8 @@ class DonationController extends GetxController {
               comments: item['comments'] ?? '',
             );
           }).toList();
+//donations.assignAll(originalDonations);
+          
         } else {
           Get.snackbar('Error', 'No data found');
         }

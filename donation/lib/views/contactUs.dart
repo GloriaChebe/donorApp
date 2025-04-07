@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/configs/constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsPage extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
+  
   final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
         elevation: 0,
         title: Text(
           "Contact Us",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
         ),
-        backgroundColor: Colors.indigo[600],
+        backgroundColor: primaryColor,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Banner
+            
             
             
             SizedBox(height: 20),
@@ -36,7 +39,7 @@ class ContactUsPage extends StatelessWidget {
                       context,
                       Icons.phone,
                       "Call Us",
-                      "+254 745 881 266",
+                      "+254745881266",
                       Colors.green[400]!,
                     ),
                   ),
@@ -84,32 +87,14 @@ class ContactUsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Name Field
-                      TextField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          labelText: "Your Name",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.indigo[600]!, width: 2),
-                          ),
-                          prefixIcon: Icon(Icons.person, color: Colors.indigo[400]),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        ),
-                      ),
+                    
                       SizedBox(height: 16),
                     
                       // Email Field
                       TextField(
-                        controller: _emailController,
+                        controller: _subjectController,
                         decoration: InputDecoration(
-                          labelText: "Your Email",
+                          labelText: "Subject",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: Colors.grey[300]!),
@@ -118,7 +103,7 @@ class ContactUsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: Colors.indigo[600]!, width: 2),
                           ),
-                          prefixIcon: Icon(Icons.email, color: Colors.indigo[400]),
+                          prefixIcon: Icon(Icons.label, color: Colors.indigo[400]),
                           filled: true,
                           fillColor: Colors.grey[100],
                           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -132,7 +117,7 @@ class ContactUsPage extends StatelessWidget {
                         controller: _messageController,
                         decoration: InputDecoration(
                           labelText: "Your Message",
-                          hintText: "Tell us how we can help you...",
+                          //hintText: "Tell us how we can help you...",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: Colors.grey[300]!),
@@ -159,11 +144,11 @@ class ContactUsPage extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             // Handle form submission
-                            final name = _nameController.text;
-                            final email = _emailController.text;
+                           
+                            final subject = _subjectController.text;
                             final message = _messageController.text;
                     
-                            if (name.isEmpty || email.isEmpty || message.isEmpty) {
+                            if (subject.isEmpty || message.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text("Please fill in all fields"),
@@ -185,21 +170,22 @@ class ContactUsPage extends StatelessWidget {
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
-                              _nameController.clear();
-                              _emailController.clear();
+                             
+                              _subjectController.clear();
                               _messageController.clear();
                             }
                           },
                           child: Text(
                             "Submit Message",
                             style: TextStyle(
+                              color: appwhiteColor,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 16),
-                            backgroundColor: Colors.indigo[600],
+                            backgroundColor: primaryColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -220,46 +206,63 @@ class ContactUsPage extends StatelessWidget {
   }
   
   Widget _buildContactCard(BuildContext context, IconData icon, String title, String content, Color color) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
+    return GestureDetector(
+      onTap: () async {
+        print("Call Us tapped");
+        final Uri phoneUri = Uri(scheme: 'tel', path: content);
+        try {
+          await launchUrl(phoneUri);
+        } catch (e) {
+          print("Error: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Unable to open phone dialer: $e"),
+              backgroundColor: Colors.red[400],
             ),
-            SizedBox(height: 12),
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.grey[800],
+          );
+        }
+      },
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 28,
+                ),
               ),
-            ),
-            SizedBox(height: 6),
-            Text(
-              content,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
+              SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.grey[800],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 6),
+              Text(
+                content,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

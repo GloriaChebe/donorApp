@@ -12,8 +12,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'views/nav.dart';
 
-void main() async{
-await GetStorage.init();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
   runApp(MyApp());
 }
 

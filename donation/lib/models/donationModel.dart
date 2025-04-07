@@ -6,7 +6,7 @@ class Donation {
    String lastName;
    String category;
    String name;
-   String donationId;
+   String donationsID;
    String itemsID;
    String address;
    String deliveryMethod;
@@ -22,7 +22,7 @@ class Donation {
     required this.lastName,
     required this.category,
     required this.name,
-    required this.donationId,
+    required this.donationsID,
     required this.itemsID,
     required this.address,
     required this.deliveryMethod,
@@ -34,22 +34,22 @@ class Donation {
   });
 
   // Convert Donation object to JSON for API requests
-  Map<String, String> toJson() {
-    return {
-      'userID': userID,
-       'firstName': firstName,
-      'lastName': lastName,
-      'category': category,
-      'name': name,
-      'donationId': donationId,
-      'itemsID': itemsID,
-      'address': address,
-      'donationMethod': deliveryMethod,
-      'preferredDate': preferredDate,
-      'preferredTime': preferredTime,
-      'quantity': quantity.toString(),
-      'status': status,
-      'comments': comments,
-    };
-  }
+  // Map<String, String> toJson() {
+  //   return {
+  //     'userID': userID,
+  //      'firstName': firstName,
+  //     'lastName': lastName,
+  //     'category': category,
+  //     'name': name,
+  //     'donationsID': donationsID,
+  //     'itemsID': itemsID,
+  //     'address': address,
+  //     'donationMethod': deliveryMethod,
+  //     'preferredDate': preferredDate,
+  //     'preferredTime': preferredTime,
+  //     'quantity': quantity.toString(),
+  //     'status': status,
+  //     'comments': comments,
+  //   };
+  // }
 }
