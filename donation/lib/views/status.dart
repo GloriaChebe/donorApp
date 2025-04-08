@@ -134,10 +134,12 @@ class StatusPage extends State<Statuspage> {
         return 0;
       case 'Approved':
         return 1;
-      case 'Picked Up':
+      case 'Rejected':
         return 2;
-      case 'Completed':
+      case 'PickedUP':
         return 3;
+        case 'Completed':
+        return 4;
       default:
         return 0;
     }

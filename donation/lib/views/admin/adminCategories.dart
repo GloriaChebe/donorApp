@@ -144,9 +144,8 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
 
                     //categories
                     DropdownButtonFormField<String>(
-                      
                       value: selectedCategory,
-                      items: ['Food', 'Textiles', 'Engineering', 'Leather']
+                      items: ['Food', 'Textiles', 'Engineering', 'Leather', 'Money']
                           .map((selectedCategory) {
                         return DropdownMenuItem(
                           value: selectedCategory,
@@ -164,6 +163,15 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
                       ),
                       hint: Text('Select a category'),
                     ),
+                    SizedBox(height: 16),
+                    if (selectedCategory == 'Money')
+                      TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Enter Amount',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
                     SizedBox(height: 16),
 
                     //subcategory
@@ -296,7 +304,7 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
 
     if (response.statusCode == 200) {
       print("Item added successfully");
-      Navigator.of(context).pop(); // Close the popup
+     // Navigator.of(context).pop(); // Close the popup
     } else {
       print("Failed to add item");
     }
@@ -461,29 +469,9 @@ class _ItemCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8), 
-                      // edit
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                             
-                            
-                          },
-                          child: Text(
-                            'Edit',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:primaryColor,
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
+                      
+                    
+                       
                     ],
                   ),
                 ],

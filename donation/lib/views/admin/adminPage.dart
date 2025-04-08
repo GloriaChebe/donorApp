@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/views/admin/notification.dart';
 
 class AdminPage extends StatelessWidget {
   @override
@@ -17,14 +18,17 @@ class AdminPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.notifications, color: appwhiteColor),
             onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
             },
           ),
           
           IconButton(
             icon: Icon(Icons.logout, color: appwhiteColor),
             onPressed: () {
-              Navigator.pushNamed(context, '/login');
+              Navigator.pushNamed(context, '/navpage');
             },
           ),
         ],
@@ -91,7 +95,7 @@ class AdminPage extends StatelessWidget {
                           ),
                           _buildStatisticItem(
                             title: 'Wallet Balance     ',
-                            value: '\$1,250',
+                            value: '\Ksh1,250',
                             icon: Icons.account_balance_wallet,
                             color: Colors.purple,
                           ),
@@ -144,6 +148,64 @@ class AdminPage extends StatelessWidget {
                     },
                   ),
                 ],
+              ),
+            ),
+            // Donations Report Card
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Donations Report',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: appBlackColor,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/moneyDonations');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            icon: Icon(Icons.attach_money, color: Colors.white),
+                            label: Text('Money Donations',style: TextStyle(color: appwhiteColor),),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/itemDonations');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            icon: Icon(Icons.card_giftcard, color: Colors.white),
+                            label: Text('Item Donations',style: TextStyle(color: appwhiteColor),),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

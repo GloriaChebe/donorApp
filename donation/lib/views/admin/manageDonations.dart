@@ -11,7 +11,7 @@ class ManageDonationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     donationController.fetchDonations("Pending"); // Fetch donations when the page is built
     return DefaultTabController(
-      length: 4, 
+      length: 5, 
       child: Scaffold(
         appBar: AppBar( leading: IconButton(
           icon: Icon(Icons.arrow_back, color: appwhiteColor),
@@ -35,9 +35,11 @@ class ManageDonationsPage extends StatelessWidget {
       status = "Approved";
       break;
     case 2:
-      status = "PickedUp";
+      status = "Rejected";
       break;
     case 3:
+      status = "PickedUp";
+      case 4:
       status = "Completed";
       break;
     default:
@@ -50,7 +52,8 @@ class ManageDonationsPage extends StatelessWidget {
             unselectedLabelColor: appwhiteColor.withOpacity(0.7),
             tabs: [
               Tab(text: 'Pending', icon: Icon(Icons.pending_actions)),
-              Tab(text: 'Approve', icon: Icon(Icons.check_circle)),
+              Tab(text: 'Approved', icon: Icon(Icons.check_circle)),
+              Tab(text: 'Rejected', icon: Icon(Icons.cancel,color: Color.fromARGB(255, 232, 12, 12),)),
               Tab(text: 'PickedUp', icon: Icon(Icons.local_shipping)),
               Tab(text: 'Completed', icon: Icon(Icons.done_all)),
             ],
@@ -70,11 +73,7 @@ class ManageDonationsPage extends StatelessWidget {
               DonationList(
                 //donations: donationController.donations,
                 onApprove: (donation) async{
-                //  var res=await http.get(
-                //     Uri.parse('https://example.com/approveDonation?donationId=${donation.donationId}'),
-                    
-                //   );
-                  // Handle approve actio
+                
                 },
                 onReject: (donation) {
                   // Handle reject action
@@ -94,20 +93,14 @@ class ManageDonationsPage extends StatelessWidget {
               ),
               // Picked Up Donations Tab
               DonationList(
-               // donations: donationController.donations,
+               
                 onApprove: null,
                 onReject: null,
                 onMarkAsPickedUp: null, // No "Mark as Picked Up" for picked up donations
                 onMarkAsCompleted: (donation) {
                   // Handle mark as completed action
                 },
-                // filterAction: ()=> {
-                //   print('Picked Up Donations'),
-                //   //donationController.donations.where((donation) => donation.status == 'PickedUp').toList(),
-                //   donationController.updateList(donationController.originalDonations.where((donation) => donation.status == 'PickedUp').toList())
-                // },
-
-                
+               
               ),
               // Completed Donations Tab
               DonationList(
@@ -117,19 +110,19 @@ class ManageDonationsPage extends StatelessWidget {
                 onMarkAsPickedUp: null,
                 onMarkAsCompleted: null, // No actions for completed donations
               ),
+              // Additional Tab
+              DonationList(
+                onApprove: null,
+                onReject: null,
+                onMarkAsPickedUp: null,
+                onMarkAsCompleted: null, // No actions for this additional tab
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  
-
-  // Mock data for Picked Up Donations
-  
-
- 
+  } 
 }
 
 class DonationList extends StatelessWidget {
@@ -210,6 +203,8 @@ class DonationList extends StatelessWidget {
                             ? Colors.orange
                             : donation.status == 'Approved'
                                 ? Colors.green
+                                : donation.status == 'Rejected'
+                                ? Colors.red
                                 : donation.status == 'PickedUp'
                                     ? Colors.blue
                                     : Colors.black,
@@ -245,7 +240,17 @@ class DonationList extends StatelessWidget {
                           SizedBox(width: 8),
                         if (onReject != null)
                           ElevatedButton(
-                            onPressed: () => onReject!(donation.donationsID),
+                           onPressed:()async{
+                              var res= await http.get(
+                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Rejected'),
+                              );
+                              if (res.statusCode==200){
+                                donationController.fetchDonations("Pending");
+                                Get.snackbar('Success', 'Donation Rejected',
+                                  //backgroundColor: Colors.green,
+                                  colorText: Colors.white,
+                                );
+                              }},
                             style: ElevatedButton.styleFrom(
                               backgroundColor:Color.fromARGB(255, 232, 12, 12),
                             ),
@@ -254,11 +259,42 @@ class DonationList extends StatelessWidget {
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
-                        if (onMarkAsPickedUp != null)
+                        if (donation.status == 'Rejected')
+                          ElevatedButton(
+                            onPressed: () async {
+                              var res = await http.get(
+                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Pending'),
+                              );
+                              if (res.statusCode == 200) {
+                                donationController.fetchDonations("Rejected");
+                                Get.snackbar('Notice', 'Donation Revoked',
+                                  colorText: Colors.white,
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                            ),
+                            child: Text(
+                              'Revoke',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        //if (onMarkAsPickedUp != null)
                           SizedBox(width: 8),
                         if (onMarkAsPickedUp != null)
                           ElevatedButton(
-                            onPressed: () => onMarkAsPickedUp!(donation.donationsID),
+                            onPressed:()async{
+                              var res= await http.get(
+                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=PickedUp'),
+                              );
+                              if (res.statusCode==200){
+                                donationController.fetchDonations("Approved");
+                                Get.snackbar('Success', 'on transit',
+                                  //backgroundColor: Colors.green,
+                                  colorText: Colors.white,
+                                );
+                              }},
                             style: ElevatedButton.styleFrom(
                               backgroundColor:secondaryColor ,
                             ),
@@ -267,11 +303,19 @@ class DonationList extends StatelessWidget {
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
-                        if (onMarkAsCompleted != null)
-                          SizedBox(width: 8),
-                        if (onMarkAsCompleted != null)
+                        if (donation.status == 'PickedUp')
                           ElevatedButton(
-                            onPressed: () => onMarkAsCompleted!(donation.donationsID),
+                            onPressed:()async{
+                              var res= await http.get(
+                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Completed'),
+                              );
+                              if (res.statusCode==200){
+                                donationController.fetchDonations("PickedUp");
+                                Get.snackbar('Success', 'completed',
+                                  //backgroundColor: Colors.green,
+                                  colorText: Colors.white,
+                                );
+                              }},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: secondaryColor,
                             ),

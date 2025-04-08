@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:get_storage/get_storage.dart';
 
 class ContactUsPage extends StatelessWidget {
   
@@ -24,9 +26,6 @@ class ContactUsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
-            
-            
             SizedBox(height: 20),
             
             // Contact Information Cards
@@ -49,7 +48,7 @@ class ContactUsPage extends StatelessWidget {
                       context,
                       Icons.email_outlined,
                       "Email Us",
-                      "support@company.com",
+                      "glosschebet@gmail.com",
                       Colors.orange[400]!,
                     ),
                   ),
@@ -90,7 +89,7 @@ class ContactUsPage extends StatelessWidget {
                     
                       SizedBox(height: 16),
                     
-                      // Email Field
+                      // subject
                       TextField(
                         controller: _subjectController,
                         decoration: InputDecoration(
@@ -142,9 +141,7 @@ class ContactUsPage extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Handle form submission
-                           
+                          onPressed: () async {
                             final subject = _subjectController.text;
                             final message = _messageController.text;
                     
@@ -157,22 +154,64 @@ class ContactUsPage extends StatelessWidget {
                                 ),
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Row(
-                                    children: [
-                                      Icon(Icons.check_circle, color: Colors.white),
-                                      SizedBox(width: 12),
-                                      Text("Message sent successfully!"),
-                                    ],
+                              try {
+                                final storage = GetStorage();
+                                final userID = storage.read("userID") ?? '';
+
+                                if (userID.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("User ID not found. Please log in again."),
+                                      backgroundColor: Colors.red[400],
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                final response = await http.post(
+                                  Uri.parse('https://sanerylgloann.co.ke/donorApp/createMessage.php?'),
+                                  body: {
+                                    'userID': userID,
+                                    'subject': subject,
+                                    'message': message,
+                                  },
+                                );
+                    
+                                if (response.statusCode == 200) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Row(
+                                        children: [
+                                          Icon(Icons.check_circle, color: Colors.white),
+                                          SizedBox(width: 12),
+                                          Text("Message sent successfully!"),
+                                        ],
+                                      ),
+                                      backgroundColor: Colors.green[600],
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                  _subjectController.clear();
+                                  _messageController.clear();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Failed to send message. Please try again."),
+                                      backgroundColor: Colors.red[400],
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("An error occurred: $e"),
+                                    backgroundColor: Colors.red[400],
+                                    behavior: SnackBarBehavior.floating,
                                   ),
-                                  backgroundColor: Colors.green[600],
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                             
-                              _subjectController.clear();
-                              _messageController.clear();
+                                );
+                              }
                             }
                           },
                           child: Text(
@@ -208,18 +247,35 @@ class ContactUsPage extends StatelessWidget {
   Widget _buildContactCard(BuildContext context, IconData icon, String title, String content, Color color) {
     return GestureDetector(
       onTap: () async {
-        print("Call Us tapped");
-        final Uri phoneUri = Uri(scheme: 'tel', path: content);
-        try {
-          await launchUrl(phoneUri);
-        } catch (e) {
-          print("Error: $e");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Unable to open phone dialer: $e"),
-              backgroundColor: Colors.red[400],
-            ),
+        if (title == "Call Us") {
+          final Uri phoneUri = Uri(scheme: 'tel', path: content);
+          try {
+            await launchUrl(phoneUri);
+          } catch (e) {
+            print("Error: $e");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Unable to open phone dialer: $e"),
+                backgroundColor: Colors.red[400],
+              ),
+            );
+          }
+        } else if (title == "Email Us") {
+          final Uri emailUri = Uri(
+            scheme: 'mailto',
+            path: content,
           );
+          try {
+            await launchUrl(emailUri);
+          } catch (e) {
+            print("Error: $e");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Unable to open email app: $e"),
+                backgroundColor: Colors.red[400],
+              ),
+            );
+          }
         }
       },
       child: Card(
