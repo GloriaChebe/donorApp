@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/itemController.dart';
+import 'package:flutter_application_1/controllers/mostDonated.dart';
 import 'package:flutter_application_1/models/donatedProduct.dart';
 import 'package:flutter_application_1/models/item.dart';
 import 'package:flutter_application_1/models/urgentProduct.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_application_1/views/home/podiumChart.dart';
 import 'package:flutter_application_1/views/payment.dart';
 import 'package:flutter_application_1/views/categories.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 var storage= GetStorage();
 
@@ -17,13 +20,12 @@ class HomePage extends StatelessWidget {
  String role =storage.read('role')??"";
     String firstName =storage.read('firstName')??"";
        String userID =storage.read('userID')??"";
- ItemController itemController = ItemController();
+ ItemController itemController = Get.put(ItemController());
+ TopDonationController mostDonatedController = Get.put(TopDonationController());
+  
 
-  final List<DonatedProduct> topDonatedProducts = [
-    DonatedProduct(name: "Oranges"),
-    DonatedProduct(name: "Banana Stems"),
-    DonatedProduct(name: "Honey"),
-  ];
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class HomePage extends StatelessWidget {
     print("home"+firstName);
      print("home"+userID);
     itemController.fetchUrgentDonationItems();
+    mostDonatedController.fetchTopDonations();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -92,7 +95,7 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 16),
-                  PodiumChart(topProducts: topDonatedProducts),
+                  PodiumChart(topProducts: mostDonatedController.topItems),
                 ],
               ),
             ),

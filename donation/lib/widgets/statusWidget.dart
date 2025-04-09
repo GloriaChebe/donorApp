@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 
+
 class StatusCard extends StatelessWidget {
   final String donationId;
   final String currentStatus;
@@ -26,76 +27,79 @@ class StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: secondaryColor.withOpacity(0.1),
-        borderRadius: BorderRadius.all(
-          Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: Offset(0, 2),
+    return Padding(
+      padding: const EdgeInsets.symmetric( horizontal: 12),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: secondaryColor.withOpacity(0.1),
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Donation ID: $donationId',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(currentStatus),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  currentStatus,
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Item: $quantity x $itemName',
-                style: TextStyle(fontSize: 16),
-              ),
-              GestureDetector(
-                onTap: onToggleDetails,
-                child: Icon(
-                  showFullDetails ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  size: 32,
-                  color: appBlackColor,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Pickup Option: $pickupOption',
-            style: TextStyle(fontSize: 16),
-          ),
-          if (pickupOption == 'Schedule Pickup' && pickupDate != null && pickupTime != null) ...[
-            SizedBox(height: 8),
-            Text(
-              'Scheduled For: ${pickupDate!.day}/${pickupDate!.month}/${pickupDate!.year} at ${pickupTime!.hour}:${pickupTime!.minute.toString().padLeft(2, '0')}',
-              style: TextStyle(fontSize: 16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: Offset(0, 2),
             ),
           ],
-        ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Donation ID: $donationId',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(currentStatus),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    currentStatus,
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Item: $quantity x $itemName',
+                  style: TextStyle(fontSize: 16),
+                ),
+                GestureDetector(
+                  onTap: onToggleDetails,
+                  child: Icon(
+                    showFullDetails ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 32,
+                    color: appBlackColor,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Pickup Option: $pickupOption',
+              style: TextStyle(fontSize: 16),
+            ),
+            if (pickupOption == 'Schedule Pickup' && pickupDate != null && pickupTime != null) ...[
+              SizedBox(height: 8),
+              Text(
+                'Scheduled For: ${pickupDate!.day}/${pickupDate!.month}/${pickupDate!.year} at ${pickupTime!.hour}:${pickupTime!.minute.toString().padLeft(2, '0')}',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -149,21 +153,21 @@ class StepProgressIndicator extends StatelessWidget {
                     ),
                   
                   // Circle
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
-                      border: Border.all(
-                        //color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
-                        width: 2,
-                      ),
-                    ),
-                    child: isActive
-                        ? Icon(Icons.check, color: Colors.white, size: 16)
-                        : null,
-                  ),
+                  // Container(
+                  //   width: 24,
+                  //   height: 24,
+                  //   decoration: BoxDecoration(
+                  //     shape: BoxShape.circle,
+                  //     color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
+                  //     border: Border.all(
+                  //       //color: isActive ? Color(0xFF1565C0) : Colors.grey[300],
+                  //       width: 2,
+                  //     ),
+                  //   ),
+                  //   child: isActive
+                  //       ? Icon(Icons.check, color: Colors.white, size: 16)
+                  //       : null,
+                  // ),
                   
                   // Line after circle (except for last item)
                   if (!isLast)

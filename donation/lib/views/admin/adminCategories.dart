@@ -14,6 +14,7 @@ String? selectedCategory = 'Food';
     
     File? selectedImage;
     final TextEditingController nameController = TextEditingController();
+    final TextEditingController amountController = TextEditingController();
 
 class CategoriesAdmin extends StatefulWidget {
   @override
@@ -166,11 +167,13 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
                     SizedBox(height: 16),
                     if (selectedCategory == 'Money')
                       TextField(
+                        controller: amountController,
+
                         decoration: InputDecoration(
                           labelText: 'Enter Amount',
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
+                        //keyboardType: TextInputType.number,
                       ),
                     SizedBox(height: 16),
 
@@ -291,6 +294,7 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
     request.fields['name'] = nameController.text;
     request.fields['category'] = selectedCategory ?? '';
     request.fields['mostRequired'] = urgency??'' ;
+     request.fields['amount'] = amountController.text;
 
     // Attach image file
     var imageFile = await http.MultipartFile.fromPath(

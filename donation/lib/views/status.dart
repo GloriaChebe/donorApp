@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/controllers/donationController.dart';
 import 'package:flutter_application_1/widgets/statusWidget.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get_storage/get_storage.dart';
 
 import 'package:step_progress_indicator/step_progress_indicator.dart' as step_progress;
-
-
+final DonationController donationController=DonationController();
+var store= GetStorage();
 class Statuspage extends StatefulWidget {
   final String donationId;
   final String currentStatus;
@@ -29,102 +32,104 @@ class Statuspage extends StatefulWidget {
 }
 
 class StatusPage extends State<Statuspage> {
+  
   bool _showFullDetails = false; // Toggle for showing full details
 
   @override
   Widget build(BuildContext context) {
+    // Fetch the donation data from the controller  
+    donationController.fetchPersonalDonations(store.read('userID'));
+   
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
         foregroundColor: appwhiteColor,
         title: Text('Donation Status', style: TextStyle(color: Colors.white)),
         backgroundColor: primaryColor,
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 10),
-          // First StatusCard for donation details
-          StatusCard(
-            donationId: widget.donationId,
-            currentStatus: widget.currentStatus,
-            itemName: widget.itemName,
-            quantity: widget.quantity,
-            pickupOption: widget.pickupOption,
-            pickupDate: widget.pickupDate,
-            pickupTime: widget.pickupTime,
-            showFullDetails: _showFullDetails,
-            onToggleDetails: () {
-              setState(() {
-                _showFullDetails = !_showFullDetails;
-              });
-            },
-          ),
-          SizedBox(height: 20),
-          
-          Visibility(
-            visible: _showFullDetails,
-            child: Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Timeline Section
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: step_progress.StepProgressIndicator(
-                              currentStep: _getStepIndex(widget.currentStatus) + 1,
-                              totalSteps: 4,
-                            ),
+      body:Obx(()=> ListView.builder(
+          itemCount: donationController.userDonations.length, // Only one item in this case
+          itemBuilder:   (context, index) => Column(
+          children: [
+         
+            StatusCard(
+              donationId: donationController.userDonations[index].donationsID,
+              currentStatus: donationController.userDonations[index].status,
+              itemName: donationController.userDonations[index].name,
+              quantity:donationController.userDonations[index].quantity,
+              pickupOption: donationController.userDonations[index].deliveryMethod=='0'
+                  ? 'Pickup'
+                  :'Drop Off'
+                      ,
+              pickupDate: donationController.userDonations[index].preferredDate != null
+                  ? DateTime.parse(donationController.userDonations[index].preferredDate)
+                  : null,
+              pickupTime:donationController.userDonations[index].preferredTime != null
+                  ? TimeOfDay(
+                      hour: int.parse(donationController.userDonations[index].preferredTime.split(':')[0]),
+                      minute: int.parse(donationController.userDonations[index].preferredTime.split(':')[1]),
+                    )
+                  : null,
+              showFullDetails: donationController.openingStatus[index],
+              onToggleDetails: () {
+                print("clicked $index");
+                donationController.setOpeningStatus(index, !donationController.openingStatus[index]);
+              },
+            ),
+            SizedBox(height: 20),
+            
+            Obx(()=>Visibility(
+                visible:donationController. openingStatus[index],
+                child: SizedBox(
+                  height: 160,
+                  
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // Timeline Section
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: step_progress.StepProgressIndicator(
+                                  currentStep: _getStepIndex(donationController.userDonations[index].status) + 1,
+                                  totalSteps: 4,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-
-                    // Status Description Section
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      margin: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _getStatusDescription(widget.currentStatus),
-                            style: TextStyle(fontSize: 16),
+                        ),
+                  
+                        // Status Description Section
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          margin: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey[300]!),
                           ),
-                        ],
-                      ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _getStatusDescription(donationController.userDonations[index].status),
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      // // Floating action button to access messages
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => (),
-      //       ),
-      //     );
-      //   },
-      //   backgroundColor: Color.fromARGB(255, 245, 132, 14),
-      //   child: Icon(
-      //     Icons.chat,
-      //     color: appwhiteColor,
-      //   ),
-      //   tooltip: 'Messages',
-      // ),
+          ],
+        ),),
+      )
+     
     );
   }
 

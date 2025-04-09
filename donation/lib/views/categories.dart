@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/item.dart';
 import 'package:flutter_application_1/views/donate.dart';
+import 'package:flutter_application_1/views/payment.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../configs/constants.dart';
@@ -206,14 +207,17 @@ class _ItemCard extends StatelessWidget {
                       onPressed: () {
                         //print body passed
                         print('Item ID: ${item.itemsID}');
-                        //storage.write('itemsID', itemsID);
+                        if (item.category=="Money"){
+                          Get.to(()=>PaymentPage());
+                        }
+                        else{
                         Get.to(() => DonatePage(
                               itemName: item.name,
                               itemImage: item.image,
                               itemCategory: item.category,
                               itemsID: item.itemsID,
                             ));
-                      },
+                      }},
                       child: Text(
                         'Donate',
                         style: TextStyle(

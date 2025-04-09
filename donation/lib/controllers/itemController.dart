@@ -15,7 +15,12 @@ class ItemController extends GetxController {
   final String apiUrl = "https://sanerylgloann.co.ke/donorApp/readItems.php";
   final String urgentApiUrl = "https://sanerylgloann.co.ke/donorApp/readUrgent.php";
 
-  // Fetch donation items from the API
+ @override// Fetch donation items from the API
+  onInit(){
+    super.onInit();
+    fetchDonationItems();
+    fetchUrgentDonationItems();
+  }
   Future<void> fetchDonationItems() async {
     try {
       isLoading(true);
@@ -92,10 +97,6 @@ class ItemController extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    fetchDonationItems();
-    fetchUrgentDonationItems();
-  }
+  
+ 
 }

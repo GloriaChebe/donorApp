@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/donatedProduct.dart';
+import 'package:flutter_application_1/models/mostDonated.dart';
 import 'package:flutter_application_1/views/home/podiumBar.dart';
 
 
 class PodiumChart extends StatelessWidget {
-  final List<DonatedProduct> topProducts;
+  final List<TopDonationItem> topProducts;
 
   PodiumChart({required this.topProducts});
 

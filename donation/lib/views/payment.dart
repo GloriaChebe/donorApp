@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/mpesa/initializer.dart';
+import 'package:flutter_application_1/mpesa/payment_enums.dart';
+import 'package:flutter_application_1/views/status.dart';
+import 'package:get_storage/get_storage.dart';
+
+//mpesa keys for bill
+const mConsumerSecret = "uHjtGaaApc2MShGw";
+const mConsumerKey = "JcGnu7ytS4pGNW7GiCaT1jKfDlRw3x4Q";
+const mPassKey =
+    "da1ea4e78c9c307f67b9ffb3cd2fcfafa7d729c6132a4f31ac4d8b26c8c7ba43";
+var store = GetStorage();
 
 class PaymentPage extends StatelessWidget {
+ 
   @override
   Widget build(BuildContext context) {
+  MpesaFlutterPlugin.setConsumerKey(mConsumerKey);
+  MpesaFlutterPlugin.setConsumerSecret(mConsumerSecret);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -65,9 +79,74 @@ class PaymentPage extends StatelessWidget {
                   icon: Icons.phone_android,
                   color: Colors.green.shade400,
                   onTap: () {
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   const SnackBar(content: Text("M-Pesa payment selected")),
-                    // );
+                    final phoneController = TextEditingController();
+                    final amountController = TextEditingController();
+
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        phoneController.text=store.read('phoneNumber')??'';
+                        return AlertDialog(
+                          title: Text("M-Pesa Payment"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextField(
+                                controller: phoneController,
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  labelText: "Phone Number",
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              TextField(
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Amount",
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context), 
+                              child: Text("Cancel"),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                              ),
+                              onPressed: () {
+                                // var phone = phoneController.text.trim();
+                                // var amount = amountController.text.trim();
+
+                                // if (phone.isEmpty || amount.isEmpty) {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     SnackBar(content: Text("Please fill in all fields")),
+                                //   );
+                                //   return;
+                                // }else{
+                                 // print("pay");
+                                 // phone= phone.startsWith('0') ? '254${phone.substring(1)}' : phone;
+                                 Navigator.pop(context);
+                                _startCheckout("88", "9", "donation");
+                                //}
+                               
+
+                                // Handle payment logic here
+                                //debugPrint("Phone: $phone, Amount: $amount");
+                               // Navigator.pop(context);
+                             },
+                              child: Text("Proceed to Pay",style: TextStyle(color: appwhiteColor),),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
                 
@@ -173,5 +252,43 @@ class PaymentPage extends StatelessWidget {
         ),
       ),
     );
+  }
+  Future<void> _startCheckout(
+    
+    String billAmount,
+    String phone,
+    String billID,
+  ) async {
+     print("pay");
+    try {
+      final transactionInitialization =
+          await MpesaFlutterPlugin.initializeMpesaSTKPush(
+            businessShortCode: "7926509",
+            transactionType: TransactionTypes.CustomerBuyGoodsOnline,
+            amount: double.parse('5.0'),
+            partyA: phone.replaceRange(0, 1, "254"),
+            partyB: "5619373",
+            callBackURL: Uri.parse("https:/echama.agilecode.co.ke/public/api/payment/callback"),
+            accountReference: "Payment",
+            phoneNumber:  phone.replaceRange(0, 1, "254"),
+            baseUri: Uri(scheme: "https", host: "api.safaricom.co.ke"),
+            transactionDesc: "Payment for Bill ID $billID",
+            passKey: mPassKey,
+          );
+
+      final merchantRequestID = transactionInitialization['MerchantRequestID'];
+      print("Merchant Request ID: $merchantRequestID");
+      // await http.post(
+      //   Uri.parse("$api_root$updateMerchantRequest"),
+      //   body: {
+      //     "merchantRequestID": merchantRequestID,
+      //     "billID": billID.toString(),
+      //   },
+      //);
+     // _populateTransactions();
+    } catch (e) {
+      print(e.toString());
+      //_showSnackBar("Error initiating payment: $e");
+    }
   }
 }
