@@ -175,6 +175,8 @@ class _LoginPageState extends State<LoginPage> {
                                     storage.write("firstName", res['firstName']);
                                     storage.write("userID", res['userID']);
                                     storage.write("phoneNumber", res['phoneNumber']);
+                                    storage.write("lastName", res['lastname']);
+                                    storage.write("email", res['email']);
                                     print(res['role']);
                                     print(res['firstName']);
                                     print(res['userID']);

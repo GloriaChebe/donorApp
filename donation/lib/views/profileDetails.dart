@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/controllers/profileController.dart';
+import 'package:flutter_application_1/models/profileModel.dart';
+import 'package:flutter_application_1/views/home/homePage.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+UserProfileController userController = Get.put(UserProfileController());
 
 class ProfileDetailsPage extends StatefulWidget {
+  String firstName = storage.read('firstName') ?? "";
+  String lastName = storage.read('lastName') ?? "";
+  String email = storage.read('email') ?? "";
+  String phoneNumber = storage.read('phoneNumber') ?? "";
   @override
   _ProfileDetailsPageState createState() => _ProfileDetailsPageState();
 }
@@ -9,10 +20,10 @@ class ProfileDetailsPage extends StatefulWidget {
 class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // User details (mock data)
-  String _name = "Gloria Chebet";
-  String _email = "gloss@gmail.com";
-  String _phone = "0745881266";
+  // Initialize user details from storage
+  late String _name;
+  late String _email;
+  late String _phone;
 
   // Controllers for editing
   late TextEditingController _nameController;
@@ -24,6 +35,10 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _name = storage.read('firstName') ?? "";
+    _email = storage.read('email') ?? "";
+    _phone = storage.read('phoneNumber') ?? "";
+
     _nameController = TextEditingController(text: _name);
     _emailController = TextEditingController(text: _email);
     _phoneController = TextEditingController(text: _phone);
@@ -39,6 +54,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    userController.fetchUserProfile;
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -51,7 +67,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor:primaryColor,
+        backgroundColor: primaryColor,
         actions: [
           if (!_isEditing)
             IconButton(
@@ -77,7 +93,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
               ),
             ),
           ),
-          
+
           // Main content
           SingleChildScrollView(
             child: Padding(
@@ -87,7 +103,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                 child: Column(
                   children: [
                     SizedBox(height: 20),
-                    
+
                     // Profile avatar section with edit button
                     Stack(
                       alignment: Alignment.center,
@@ -119,7 +135,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                             ),
                           ),
                         ),
-                        
+
                         // Edit avatar button
                         if (_isEditing)
                           Positioned(
@@ -140,9 +156,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                           ),
                       ],
                     ),
-                    
+
                     SizedBox(height: 20),
-                    
+
                     // Name display when not editing
                     if (!_isEditing)
                       Text(
@@ -153,9 +169,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                           color: primaryColor,
                         ),
                       ),
-                    
+
                     SizedBox(height: 30),
-                    
+
                     // Profile info card
                     Container(
                       decoration: BoxDecoration(
@@ -184,9 +200,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                                   color: Colors.indigo[900],
                                 ),
                               ),
-                              
+
                             if (_isEditing) SizedBox(height: 20),
-                              
+
                             // Name Field
                             _isEditing
                                 ? _buildTextField(
@@ -205,9 +221,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                                     label: 'Name',
                                     value: _name,
                                   ),
-                                  
+
                             SizedBox(height: _isEditing ? 16 : 12),
-                            
+
                             // Email Field
                             _isEditing
                                 ? _buildTextField(
@@ -230,9 +246,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                                     label: 'Email',
                                     value: _email,
                                   ),
-                                  
+
                             SizedBox(height: _isEditing ? 16 : 12),
-                            
+
                             // Phone Field
                             _isEditing
                                 ? _buildTextField(
@@ -259,9 +275,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                         ),
                       ),
                     ),
-                    
+
                     SizedBox(height: 30),
-                    
+
                     // Action buttons
                     if (_isEditing)
                       Row(
@@ -341,7 +357,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                           ),
                         ],
                       ),
-                    
+
                     SizedBox(height: 30),
                   ],
                 ),

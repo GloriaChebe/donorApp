@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/controllers/statisticsController.dart';
 import 'package:flutter_application_1/views/admin/notification.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+DashboardController statiticsController = Get.put(DashboardController());
 
 class AdminPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    statiticsController.fetchDashboardSummary();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -54,55 +60,64 @@ class AdminPage extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Statistics',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: appBlackColor,
+                  child: Obx(() {
+                    if (statiticsController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    final summary = statiticsController.summary.value;
+                    if (summary == null) {
+                      return Center(child: Text('No data available'));
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Statistics',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: appBlackColor,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildStatisticItem(
-                            title: 'Total Donations',
-                            value: '120',
-                            icon: Icons.volunteer_activism,
-                            color: Colors.green,
-                          ),
-                          _buildStatisticItem(
-                            title: 'Pending Approvals',
-                            value: '15',
-                            icon: Icons.pending_actions,
-                            color: Colors.orange,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildStatisticItem(
-                            title: 'Total Donors',
-                            value: '85',
-                            icon: Icons.people,
-                            color: Colors.blue,
-                          ),
-                          _buildStatisticItem(
-                            title: 'Wallet Balance     ',
-                            value: '\Ksh1,250',
-                            icon: Icons.account_balance_wallet,
-                            color: Colors.purple,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildStatisticItem(
+                              title: 'Total Donations',
+                              value: summary.totalDonations.toString(),
+                              icon: Icons.volunteer_activism,
+                              color: Colors.green,
+                            ),
+                            _buildStatisticItem(
+                              title: 'Pending Approvals',
+                              value: summary.pendingApprovals.toString(),
+                              icon: Icons.pending_actions,
+                              color: Colors.orange,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildStatisticItem(
+                              title: 'Total Users',
+                              value: summary.totalUsers.toString(),
+                              icon: Icons.people,
+                              color: Colors.blue,
+                            ),
+                            _buildStatisticItem(
+                              title: 'Wallet Balance',
+                              value: '\Ksh1,250', // Placeholder for now
+                              icon: Icons.account_balance_wallet,
+                              color: Colors.purple,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
