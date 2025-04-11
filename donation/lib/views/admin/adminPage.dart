@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
+import 'package:flutter_application_1/controllers/donationController.dart';
+import 'package:flutter_application_1/controllers/reportsController.dart';
 import 'package:flutter_application_1/controllers/statisticsController.dart';
+import 'package:flutter_application_1/models/donationModel.dart';
 import 'package:flutter_application_1/views/admin/notification.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 DashboardController statiticsController = Get.put(DashboardController());
 
-class AdminPage extends StatelessWidget {
+class AdminPage extends StatefulWidget {
   @override
+  //initstate method to initialize the controller
+
+  State<AdminPage> createState() => _AdminPageState();
+}
+
+class _AdminPageState extends State<AdminPage> {
+  @override void initState() {
+    super.initState();
+    statiticsController.fetchDashboardSummary();
+  }
+
   Widget build(BuildContext context) {
     statiticsController.fetchDashboardSummary();
     return Scaffold(
@@ -203,19 +220,20 @@ class AdminPage extends StatelessWidget {
                             icon: Icon(Icons.attach_money, color: Colors.white),
                             label: Text('Money Donations',style: TextStyle(color: appwhiteColor),),
                           ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/itemDonations');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            icon: Icon(Icons.card_giftcard, color: Colors.white),
-                            label: Text('Item Donations',style: TextStyle(color: appwhiteColor),),
-                          ),
+                         ElevatedButton.icon(
+                      onPressed: () async {
+                         final ReportsController controller = Get.put(ReportsController());
+                          await controller.fetchDonations(); // or any status you want
+                               await generateItemDonationsPdf(controller.donations);
+                                 },
+                           style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                               ),
+                   icon: Icon(Icons.card_giftcard, color: Colors.white),
+                            label: Text('Item Donations', style: TextStyle(color: appwhiteColor)),
+                                      ),
+
                         ],
                       ),
                     ],
@@ -288,4 +306,57 @@ class AdminPage extends StatelessWidget {
       ),
     );
   }
+}
+
+
+
+Future<void> generateItemDonationsPdf(List<Donation> donations) async {
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.MultiPage(
+      build: (pw.Context context) => [
+        pw.Text('Item Donations Report',
+            style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 20),
+        pw.Table.fromTextArray(
+          border: pw.TableBorder.all(),
+          cellStyle: pw.TextStyle(fontSize: 10),
+          headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+          headers: [
+            'Donation ID',
+            'User ID',
+            'Name',
+            'Item',
+            'Quantity',
+            'Status',
+            'Address',
+            'Delivery Method',
+            'Preferred Date',
+            'Preferred Time',
+            'Time Donated'
+          ],
+          data: donations.map((donation) {
+            return [
+              donation.donationsID,
+              donation.userID,
+              '${donation.firstName} ${donation.lastName}',
+              donation.name,
+              donation.quantity.toString(),
+              donation.status,
+              donation.address,
+              donation.deliveryMethod,
+              donation.preferredDate,
+              donation.preferredTime,
+              donation.timestamp, // Assuming this holds timestamp info
+            ];
+          }).toList(),
+        )
+      ],
+    ),
+  );
+
+  await Printing.layoutPdf(
+    onLayout: (PdfPageFormat format) async => pdf.save(),
+  );
 }

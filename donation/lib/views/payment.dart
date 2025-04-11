@@ -8,8 +8,7 @@ import 'package:get_storage/get_storage.dart';
 //mpesa keys for bill
 const mConsumerSecret = "uHjtGaaApc2MShGw";
 const mConsumerKey = "JcGnu7ytS4pGNW7GiCaT1jKfDlRw3x4Q";
-const mPassKey =
-    "da1ea4e78c9c307f67b9ffb3cd2fcfafa7d729c6132a4f31ac4d8b26c8c7ba43";
+const mPassKey ="da1ea4e78c9c307f67b9ffb3cd2fcfafa7d729c6132a4f31ac4d8b26c8c7ba43";
 var store = GetStorage();
 
 class PaymentPage extends StatelessWidget {
@@ -58,7 +57,7 @@ class PaymentPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Header Section
                 const Text(
-                  "Select Your Preferred\nPayment Method",
+                  "Make Payment",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -133,7 +132,7 @@ class PaymentPage extends StatelessWidget {
                                  // print("pay");
                                  // phone= phone.startsWith('0') ? '254${phone.substring(1)}' : phone;
                                  Navigator.pop(context);
-                                _startCheckout("88", "9", "donation");
+                                _startCheckout("10", "9", "donation");
                                 //}
                                
 
@@ -152,18 +151,18 @@ class PaymentPage extends StatelessWidget {
                 
                 const SizedBox(height: 16),
                 
-                _buildPaymentOption(
-                  context,
-                  title: "Credit/Debit Card",
-                  subtitle: "Pay with Visa, Mastercard or other cards",
-                  icon: Icons.credit_card,
-                  color: Colors.blue.shade400,
-                  onTap: () {
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   const SnackBar(content: Text("Card payment selected")),
-                    // );
-                  },
-                ),
+                // _buildPaymentOption(
+                //   context,
+                //   title: "Credit/Debit Card",
+                //   subtitle: "Pay with Visa, Mastercard or other cards",
+                //   icon: Icons.credit_card,
+                //   color: Colors.blue.shade400,
+                //   onTap: () {
+                //     // ScaffoldMessenger.of(context).showSnackBar(
+                //     //   const SnackBar(content: Text("Card payment selected")),
+                //     // );
+                //   },
+                // ),
                 
                 const Spacer(),
                 

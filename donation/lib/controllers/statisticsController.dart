@@ -7,6 +7,12 @@ import 'package:http/http.dart' as http;
 class DashboardController extends GetxController {
   var summary = Rxn<DashboardSummary>();
   var isLoading = false.obs;
+  //oninit method to fetch data when the controller is initialized
+  @override
+  void onInit() {
+    super.onInit();
+    fetchDashboardSummary();
+  }
 
   Future<void> fetchDashboardSummary() async {
     isLoading.value = true;
@@ -17,6 +23,8 @@ class DashboardController extends GetxController {
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
+        print(response.body);
+        
         if (jsonData['success'] == 1) {
           summary.value = DashboardSummary.fromJson(jsonData['data']);
         } else {

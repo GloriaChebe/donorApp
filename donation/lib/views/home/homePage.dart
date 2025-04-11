@@ -16,18 +16,30 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 var storage= GetStorage();
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
  String role =storage.read('role')??"";
+
     String firstName =storage.read('firstName')??"";
+
        String userID =storage.read('userID')??"";
+
  ItemController itemController = Get.put(ItemController());
+
  TopDonationController mostDonatedController = Get.put(TopDonationController());
-  
-
-
- 
 
   @override
+  //init
+  void initState() {
+    super.initState();
+    // Fetch data when the widget is first builts
+    itemController.fetchUrgentDonationItems();
+    mostDonatedController.fetchTopDonations();
+  }
   Widget build(BuildContext context) {
     //itemController.fetchDonationItems();
    
@@ -72,14 +84,22 @@ class HomePage extends StatelessWidget {
             // Urgent Products - Horizontal Scroll
             SizedBox(
               height: 201,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                itemCount: itemController.urgentItems.length,
-                itemBuilder: (context, index) {
-                  return _buildUrgentProductCard(context, itemController.urgentItems[index]);
-                },
-              ),
+              child: Obx(() {
+                if (itemController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (itemController.urgentItems.isEmpty) {
+                  return Center(child: Text("No urgent items available"));
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  itemCount: itemController.urgentItems.length,
+                  itemBuilder: (context, index) {
+                    return _buildUrgentProductCard(context, itemController.urgentItems[index]);
+                  },
+                );
+              }),
             ),
 
             SizedBox(height: 24),
@@ -95,7 +115,15 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 16),
-                  PodiumChart(topProducts: mostDonatedController.topItems),
+                  Obx(() {
+                    if (mostDonatedController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (mostDonatedController.topItems.isEmpty) {
+                      return Center(child: Text("No donated products available"));
+                    }
+                    return PodiumChart(topProducts: mostDonatedController.topItems);
+                  }),
                 ],
               ),
             ),

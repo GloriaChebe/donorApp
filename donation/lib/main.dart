@@ -4,6 +4,7 @@ import 'package:flutter_application_1/utils/link.dart';
 import 'package:flutter_application_1/views/admin/adminCategories.dart';
 import 'package:flutter_application_1/views/admin/adminPage.dart';
 import 'package:flutter_application_1/views/categories.dart';
+import 'package:flutter_application_1/views/forgotPass.dart';
 import 'package:flutter_application_1/views/login.dart';
 import 'package:flutter_application_1/views/profileDetails.dart';
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
      getPages: AppRouting.getPages,
       home: SplashScreen(),
       //home: CategoriesAdmin(),
+     // home:ResetRequestPage (),
       debugShowCheckedModeBanner: false,
     );
   }

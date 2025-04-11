@@ -54,6 +54,7 @@ class DonationController extends GetxController {
               quantity: int.tryParse(item['quantity'].toString()) ?? 0,
               status: item['status'] ?? '',
               comments: item['comments'] ?? '',
+              timestamp: item['timestamp'] ?? '',
             );
           }).toList();
 
@@ -101,6 +102,7 @@ class DonationController extends GetxController {
               quantity: int.tryParse(item['quantity'].toString()) ?? 0,
               status: item['status'] ?? '',
               comments: item['comments'] ?? '',
+              timestamp: item['timestamp'] ?? '',
             );
           }).toList();
           print("testing");

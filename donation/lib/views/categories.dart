@@ -9,10 +9,19 @@ import '../controllers/itemController.dart';
 
 //var storage=GetStorage();
 
-class CategoriesPage extends StatelessWidget {
+class CategoriesPage extends StatefulWidget {
+  @override
+  State<CategoriesPage> createState() => _CategoriesPageState();
+}
+
+class _CategoriesPageState extends State<CategoriesPage> {
   final ItemController itemController = Get.put(ItemController());
 
   @override
+  void initState() {
+    super.initState();
+    itemController.fetchDonationItems();// Fetch items when the page is initialized
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

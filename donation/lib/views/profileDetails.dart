@@ -4,15 +4,13 @@ import 'package:flutter_application_1/controllers/profileController.dart';
 import 'package:flutter_application_1/models/profileModel.dart';
 import 'package:flutter_application_1/views/home/homePage.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:http/http.dart' as http;
 
 UserProfileController userController = Get.put(UserProfileController());
 
 class ProfileDetailsPage extends StatefulWidget {
-  String firstName = storage.read('firstName') ?? "";
-  String lastName = storage.read('lastName') ?? "";
-  String email = storage.read('email') ?? "";
-  String phoneNumber = storage.read('phoneNumber') ?? "";
   @override
   _ProfileDetailsPageState createState() => _ProfileDetailsPageState();
 }
@@ -26,7 +24,8 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   late String _phone;
 
   // Controllers for editing
-  late TextEditingController _nameController;
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
 
@@ -35,18 +34,21 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _name = storage.read('firstName') ?? "";
+    _name = "${storage.read('firstName') ?? ""} ${storage.read('lastName') ?? ""}".trim();
     _email = storage.read('email') ?? "";
     _phone = storage.read('phoneNumber') ?? "";
 
-    _nameController = TextEditingController(text: _name);
+    // Initialize separate controllers for first and last names
+    _firstNameController = TextEditingController(text: storage.read('firstName') ?? "");
+    _lastNameController = TextEditingController(text: storage.read('lastName') ?? "");
     _emailController = TextEditingController(text: _email);
     _phoneController = TextEditingController(text: _phone);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
@@ -58,6 +60,8 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        automaticallyImplyLeading: true,
+        foregroundColor: appwhiteColor,
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -126,7 +130,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                             radius: 60,
                             backgroundColor: Colors.indigo[100],
                             child: Text(
-                              _name.isNotEmpty ? _name[0].toUpperCase() : "G",
+                              _name.isNotEmpty ? _name[0].toUpperCase() : "",
                               style: TextStyle(
                                 fontSize: 50,
                                 fontWeight: FontWeight.bold,
@@ -146,11 +150,6 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                               decoration: BoxDecoration(
                                 color: Colors.indigo[700],
                                 shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 18,
                               ),
                             ),
                           ),
@@ -203,18 +202,34 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
 
                             if (_isEditing) SizedBox(height: 20),
 
-                            // Name Field
+                            // First Name and Last Name Fields
                             _isEditing
-                                ? _buildTextField(
-                                    controller: _nameController,
-                                    label: 'Full Name',
-                                    icon: Icons.person_outline,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your name';
-                                      }
-                                      return null;
-                                    },
+                                ? Column(
+                                    children: [
+                                      _buildTextField(
+                                        controller: _firstNameController,
+                                        label: 'First Name',
+                                        icon: Icons.person_outline,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Enter first name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: 16),
+                                      _buildTextField(
+                                        controller: _lastNameController,
+                                        label: 'Last Name',
+                                        icon: Icons.person_outline,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Enter last name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
                                   )
                                 : _buildInfoRow(
                                     icon: Icons.person_outline,
@@ -287,7 +302,8 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                               onPressed: () {
                                 setState(() {
                                   _isEditing = false;
-                                  _nameController.text = _name;
+                                  _firstNameController.text = storage.read('firstName') ?? "";
+                                  _lastNameController.text = storage.read('lastName') ?? "";
                                   _emailController.text = _email;
                                   _phoneController.text = _phone;
                                 });
@@ -315,24 +331,48 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                           SizedBox(width: 16),
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _name = _nameController.text;
-                                    _email = _emailController.text;
-                                    _phone = _phoneController.text;
-                                    _isEditing = false;
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Profile updated successfully!'),
-                                      backgroundColor: Colors.green[600],
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
+                                  // Get first and last name
+                                  final firstName = _firstNameController.text.trim();
+                                  final lastName = _lastNameController.text.trim();
+
+                                  final success = await updateProfile(
+                                    userID: storage.read('userID') ?? "",
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    email: _emailController.text.trim(),
+                                    phoneNumber: _phoneController.text.trim(),
                                   );
+
+                                  if (success) {
+                                    // Save updated info in local storage
+                                    storage.write('firstName', firstName);
+                                    storage.write('lastName', lastName);
+                                    storage.write('email', _emailController.text.trim());
+                                    storage.write('phoneNumber', _phoneController.text.trim());
+
+                                    setState(() {
+                                      _name = "$firstName $lastName";
+                                      _email = _emailController.text;
+                                      _phone = _phoneController.text;
+                                      _isEditing = false;
+                                    });
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Profile updated successfully!'),
+                                        backgroundColor: Colors.green[600],
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Failed to update profile. Please try again.'),
+                                        backgroundColor: Colors.red[600],
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                               child: Padding(
@@ -397,72 +437,59 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.indigo.shade400, width: 2),
+          borderSide: BorderSide(color: primaryColor),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.red.shade300),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.red.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding: EdgeInsets.symmetric(vertical: 16),
       ),
       validator: validator,
     );
   }
 
-  // Helper method to build info rows when not editing
+  // Helper method to display info rows (non-editable mode)
   Widget _buildInfoRow({
     required IconData icon,
     required String label,
     required String value,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.indigo.shade50,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              color: Colors.indigo[600],
-              size: 22,
-            ),
+          Icon(
+            icon,
+            color: primaryColor,
+            size: 24,
           ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              ],
-            ),
+          SizedBox(width: 10),
+          Text(
+            '$label: $value',
+            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
           ),
         ],
       ),
     );
+  }
+
+  Future<bool> updateProfile({
+    required String userID,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phoneNumber,
+  }) async {
+    final url = 'https://sanerylgloann.co.ke/donorApp/updateProf.php';
+
+    try {
+      final response = await http.post(Uri.parse(url), body: {
+        'userID': userID,
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'phoneNumber': phoneNumber,
+      });
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
 }

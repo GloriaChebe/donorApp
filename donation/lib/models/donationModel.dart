@@ -15,6 +15,7 @@ class Donation {
   int quantity;
    String status;
   String comments;
+  String timestamp;
 
   Donation({
     required this.userID,
@@ -31,6 +32,7 @@ class Donation {
     required this.quantity,
     required this.status,
     required this.comments,
+    required this.timestamp,
   });
 
   // Convert Donation object to JSON for API requests
