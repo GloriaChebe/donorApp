@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     'Supporting Research, One Donation at a Time.',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white70,
+                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),

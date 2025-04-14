@@ -39,7 +39,7 @@ class DonatePage extends StatefulWidget {
 class _DonatePageState extends State<DonatePage> {
   final _formKey = GlobalKey<FormState>();
   int _quantity = 1;
-  String _pickupOption = 'Schedule a Pickup';
+  String _pickupOption = 'Schedule Pickup'; // Match the radio button value
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   final TextEditingController _dateController = TextEditingController();
@@ -410,66 +410,45 @@ class _DonatePageState extends State<DonatePage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          
-                              if (_formKey.currentState!.validate()) {
+                          if (_formKey.currentState!.validate()) {
+                            http.Response response = await http.post(
+                              Uri.parse('https://sanerylgloann.co.ke/donorApp/createDonations.php'),
+                              body: {
+                                'userID': storage.read("userID") ?? '',
+                                'itemsID': widget.itemsID,
+                                'address': _pickupOption == 'Schedule Pickup' ? _addressController.text : '',
+                                'deliveryMethod': _pickupOption,
+                                'prefferedDate': _selectedDate != null
+                                    ? "${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}"
+                                    : '',
+                                'prefferedTime': _selectedTime != null
+                                    ? "${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}"
+                                    : '',
+                                'quantity': _quantity.toString(),
+                                'status': 'Pending',
+                                'comments': _additionalNotesController.text,
+                              },
+                            );
 
-                                http.Response response = await http.post(
-                                  Uri.parse('https://sanerylgloann.co.ke/donorApp/createDonations.php'),
-                                  body: {
-                                   ' userID': storage.read("userID")??'',
-                                    
-                                    'itemsID': widget.itemsID,
-                                    'address':  _pickupOption.compareTo('Schedule Pickup')==0? _addressController.text : '',
-                                     'deliveryMethod':_pickupOption,
-                                    'prefferedDate': _selectedDate != null ? "${_selectedDate!.year}-${_selectedDate!.month}-${_selectedDate!.day}" : '',
-                                    'prefferedTime': _selectedTime != null ? "${_selectedTime!.hour}:${_selectedTime!.minute.toString().padLeft(2, '0')}" : '',
-                                    
-                                   'quantity': _quantity.toString(),
-                                   'status': 'Pending',
-                                   'comments': _additionalNotesController.text,
+                            print('Response: ${response.body}');
+                            if (response.statusCode == 200) {
+                              var res = jsonDecode(response.body);
+                              print('Response: $res');
 
-
-                                  }
+                              if (res['success'] == 1) {
+                                // Show the Thank You dialog
+                                _showThankYouDialog(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error Occurred')),
                                 );
-                                print('Response: ${response.body}');
-                                if(response.statusCode == 200) {
-                                  
-                                  var res=jsonDecode(response.body);
-                                  
-                                  print('Response: $res');
-
-                                  if(res['success'] == 1) {
-                                    
-                                     Get.to(() => Statuspage(
-              donationId: '0',
-              itemName: widget.itemName,
-              quantity: _quantity,
-              pickupOption: _pickupOption,
-              currentStatus: 'Pending',
-            ));
-                                 
-                                         
-                                    
-                                  } else {
-                                    
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error Ocurred')),
-                                    );
-                                  }
-                                 
-                                  
-                                } 
-                                else {
-                                 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(' Failed')),
-                                  );
-                                }
-                            
                               }
-                          // if (_formKey.currentState!.validate()) {
-                          //   _submitDonation();
-                          // }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed')),
+                              );
+                            }
+                          }
                         },
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),

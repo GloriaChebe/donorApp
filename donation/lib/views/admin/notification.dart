@@ -6,6 +6,25 @@ import 'package:http/http.dart' as http;
 class NotificationPage extends StatefulWidget {
   @override
   _NotificationPageState createState() => _NotificationPageState();
+
+  // Static method to fetch unread messages count
+  static Future<int> fetchUnreadCount() async {
+    final url = Uri.parse('https://sanerylgloann.co.ke/donorApp/readMessage.php');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> parsedResponse = json.decode(response.body);
+        if (parsedResponse['success'] == 1 && parsedResponse['data'] is List) {
+          final messages = parsedResponse['data'];
+          final unreadCount = messages.where((msg) => msg['messageStatus'] == '0').length;
+          return unreadCount;
+        }
+      }
+    } catch (e) {
+      print('Error fetching unread count: $e');
+    }
+    return 0; // Default to 0 if there's an error
+  }
 }
 
 class _NotificationPageState extends State<NotificationPage> {
@@ -20,7 +39,7 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   Future<void> fetchMessages() async {
-    final url = Uri.parse('https://sanerylgloann.co.ke/donorApp/readMessage.php?');
+    final url = Uri.parse('https://sanerylgloann.co.ke/donorApp/readMessage.php');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -45,7 +64,51 @@ class _NotificationPageState extends State<NotificationPage> {
     }
   }
 
-  // Function to mark message as read after sending a response
+  Future<void> sendEmailReply(String userID, String message) async {
+    final url = Uri.parse('https://sanerylgloann.co.ke/donorApp/createReplyMessage.php');
+    try {
+      final response = await http.get(url.replace(queryParameters: {
+        'userID': userID,  // changed to match the case expected by the PHP backend
+        'message': message,
+      }));
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        try {
+          final jsonResponse = json.decode(response.body);
+          if (jsonResponse['success'] == 1) {
+            print('Reply sent successfully.');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Reply sent successfully.')),
+            );
+          } else {
+            print('Failed to send reply: ${jsonResponse.toString()}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to send reply: ${jsonResponse['error'] ?? 'Unknown error'}')),
+            );
+          }
+        } catch (e) {
+          print('Invalid JSON: ${response.body}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Unexpected server response')),
+          );
+        }
+      } else {
+        print('Failed to send reply. Status code: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Server error: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      print('Error sending email reply: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send email: $e')),
+      );
+    }
+  }
+
   Future<void> markMessageAsRead(int messageID) async {
     final response = await http.post(
       Uri.parse('https://sanerylgloann.co.ke/donorApp/markMessageAsRead.php'),
@@ -61,52 +124,81 @@ class _NotificationPageState extends State<NotificationPage> {
     }
   }
 
-  // Function to show the response dialog for unread messages
-  void _showResponseDialog(BuildContext context, int messageID, bool isRead) {
+  void _showResponseDialog(BuildContext context, int index, bool isRead) {
+    final message = messages[index];
+    _responseController.clear();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(isRead ? 'Message' : 'Reply to Message'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('From: ${messages[messageID]['firstName']}'), // Displaying sender
-              SizedBox(height: 8),
-              Text('Message: ${messages[messageID]['message']}'), // Displaying message content
-              if (!isRead) ...[
-                TextField(
-                  controller: _responseController,
-                  decoration: InputDecoration(
-                    labelText: 'Your Response',
-                    hintText: 'Type your response here',
+        return Dialog(
+          insetPadding: EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isRead ? 'Message' : 'Reply to Message',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  maxLines: 4,
-                ),
-              ]
-            ],
-          ),
-          actions: <Widget>[
-            if (!isRead) ...[
-              ElevatedButton(
-                onPressed: () async {
-                  // Send the email and mark the message as read
-                  await markMessageAsRead(messageID);
-                  Navigator.of(context).pop(); // Close the dialog
-                  setState(() {
-                    _responseController.clear(); // Clear the text field after sending
-                  });
-                },
-                child: Text('Mark as Read'),
+                  SizedBox(height: 12),
+                  Text('From: ${message['firstName']}'),
+                  SizedBox(height: 8),
+                  Text('Message: ${message['message']}'),
+                  if (!isRead) ...[
+                    SizedBox(height: 12),
+                    TextField(
+                      controller: _responseController,
+                      decoration: InputDecoration(
+                        labelText: 'Your Response',
+                        hintText: 'Type your response here',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                    ),
+                  ],
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (!isRead)
+                        ElevatedButton(
+                          onPressed: () async {
+                            final userID = message['userID'];
+                            final replyMessage = _responseController.text.trim();
+
+                            if (replyMessage.isNotEmpty) {
+                              await sendEmailReply(userID, replyMessage);
+                              await markMessageAsRead(int.parse(message['messageID']));
+                              Navigator.of(context).pop();
+                              setState(() {
+                                _responseController.clear();
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please type a response message")),
+                              );
+                            }
+                          },
+                          child: Text('Send & Mark Read'),
+                        ),
+                      SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Close'),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog without marking as read
-              },
-              child: Text('Cancel'),
             ),
-          ],
+          ),
         );
       },
     );
@@ -115,6 +207,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         foregroundColor: appwhiteColor,
@@ -129,7 +222,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-                    final isRead = message['messageStatus'] == '1'; // Check for read status
+                    final isRead = message['messageStatus'] == '1';
 
                     return Card(
                       color: isRead ? Colors.grey[200] : Colors.white,
@@ -151,10 +244,9 @@ class _NotificationPageState extends State<NotificationPage> {
                         ),
                         trailing: Icon(
                           Icons.done_all,
-                          color: isRead ? Colors.blue : Colors.grey, // Blue for read, grey for unread
+                          color: isRead ? Colors.blue : Colors.grey,
                         ),
                         onTap: () {
-                          // Show the response dialog if the message is unread
                           _showResponseDialog(context, index, isRead);
                         },
                       ),

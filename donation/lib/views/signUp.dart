@@ -196,8 +196,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your password';
                               }
-                              if (value.length < 8) {
-                                return 'Password must be at least 8 characters';
+                              if (value.length < 5) {
+                                return 'Password must be at least 5 characters';
                               }
                               return null;
                             },
@@ -226,7 +226,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                      Navigator.pushReplacementNamed(context, '/login');
                                     // User created successfully
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('User Created')),
+                                      SnackBar(content: Text('registration successful')),
                                           
                                     );
                                   } else {

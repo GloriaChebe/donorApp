@@ -10,20 +10,30 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:badges/badges.dart' as badges;
 
 DashboardController statiticsController = Get.put(DashboardController());
 
 class AdminPage extends StatefulWidget {
   @override
-  //initstate method to initialize the controller
-
   State<AdminPage> createState() => _AdminPageState();
 }
 
 class _AdminPageState extends State<AdminPage> {
-  @override void initState() {
+  int unreadCount = 0;
+
+  @override
+  void initState() {
     super.initState();
-    statiticsController.fetchDashboardSummary();
+   // statiticsController.fetchDashboardSummary();
+    _fetchUnreadCount();
+  }
+
+  Future<void> _fetchUnreadCount() async {
+    final count = await NotificationPage.fetchUnreadCount();
+    setState(() {
+      unreadCount = count;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -37,17 +47,26 @@ class _AdminPageState extends State<AdminPage> {
         ),
         backgroundColor: primaryColor,
         actions: [
-          // Notification Icon
-          IconButton(
-            icon: Icon(Icons.notifications, color: appwhiteColor),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
-              );
-            },
+          // Notification Icon with Badge
+          badges.Badge(
+            position: badges.BadgePosition.topEnd(top: 0, end: 3),
+            badgeContent: Text(
+              unreadCount.toString(),
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            ),
+            showBadge: unreadCount > 0,
+            child: IconButton(
+              icon: Icon(Icons.notifications, color: appwhiteColor),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationPage()),
+                );
+                // Refresh unread count after returning from NotificationPage
+                _fetchUnreadCount();
+              },
+            ),
           ),
-          
           IconButton(
             icon: Icon(Icons.logout, color: appwhiteColor),
             onPressed: () {
@@ -126,7 +145,7 @@ class _AdminPageState extends State<AdminPage> {
                             ),
                             _buildStatisticItem(
                               title: 'Wallet Balance',
-                              value: '\Ksh1,250', // Placeholder for now
+                              value: 'ksh ${summary.amount}', // Placeholder for now
                               icon: Icons.account_balance_wallet,
                               color: Colors.purple,
                             ),

@@ -20,6 +20,7 @@ class DashboardController extends GetxController {
       final response = await http.get(
         Uri.parse('https://sanerylgloann.co.ke/donorApp/readStatistics.php'), 
       );
+      print(response.body);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

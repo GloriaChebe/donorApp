@@ -4,23 +4,27 @@ import 'package:flutter_application_1/mpesa/initializer.dart';
 import 'package:flutter_application_1/mpesa/payment_enums.dart';
 import 'package:flutter_application_1/views/status.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+final TextEditingController amountController = TextEditingController();
+
 
 //mpesa keys for bill
 const mConsumerSecret = "uHjtGaaApc2MShGw";
 const mConsumerKey = "JcGnu7ytS4pGNW7GiCaT1jKfDlRw3x4Q";
-const mPassKey ="da1ea4e78c9c307f67b9ffb3cd2fcfafa7d729c6132a4f31ac4d8b26c8c7ba43";
+const mPassKey = "da1ea4e78c9c307f67b9ffb3cd2fcfafa7d729c6132a4f31ac4d8b26c8c7ba43";
 var store = GetStorage();
 
 class PaymentPage extends StatelessWidget {
- 
   @override
   Widget build(BuildContext context) {
-  MpesaFlutterPlugin.setConsumerKey(mConsumerKey);
-  MpesaFlutterPlugin.setConsumerSecret(mConsumerSecret);
+    MpesaFlutterPlugin.setConsumerKey(mConsumerKey);
+    MpesaFlutterPlugin.setConsumerSecret(mConsumerSecret);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor:primaryColor,
+        backgroundColor: primaryColor,
         title: const Text(
           "Payment Method",
           style: TextStyle(
@@ -30,24 +34,13 @@ class PaymentPage extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
-        
-        foregroundColor:appwhiteColor,
+        foregroundColor: appwhiteColor,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Container(
-        // decoration: BoxDecoration(
-        //   gradient: LinearGradient(
-        //     begin: Alignment.topCenter,
-        //     end: Alignment.bottomCenter,
-        //     colors: [
-        //       primaryColor,
-        //       secondaryColor,
-        //     ],
-        //   ),
-        // ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -66,10 +59,7 @@ class PaymentPage extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
-                
                 const SizedBox(height: 40),
-                
                 // Payment Options
                 _buildPaymentOption(
                   context,
@@ -84,7 +74,7 @@ class PaymentPage extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        phoneController.text=store.read('phoneNumber')??'';
+                        phoneController.text = store.read('phoneNumber') ?? '';
                         return AlertDialog(
                           title: Text("M-Pesa Payment"),
                           content: Column(
@@ -112,7 +102,7 @@ class PaymentPage extends StatelessWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(context), 
+                              onPressed: () => Navigator.pop(context),
                               child: Text("Cancel"),
                             ),
                             ElevatedButton(
@@ -120,27 +110,23 @@ class PaymentPage extends StatelessWidget {
                                 backgroundColor: primaryColor,
                               ),
                               onPressed: () {
-                                // var phone = phoneController.text.trim();
-                                // var amount = amountController.text.trim();
+                                var phone = phoneController.text.trim();
+                                var amount = amountController.text.trim();
 
-                                // if (phone.isEmpty || amount.isEmpty) {
-                                //   ScaffoldMessenger.of(context).showSnackBar(
-                                //     SnackBar(content: Text("Please fill in all fields")),
-                                //   );
-                                //   return;
-                                // }else{
-                                 // print("pay");
-                                 // phone= phone.startsWith('0') ? '254${phone.substring(1)}' : phone;
-                                 Navigator.pop(context);
-                                _startCheckout("10", "9", "donation");
-                                //}
-                               
-
-                                // Handle payment logic here
-                                //debugPrint("Phone: $phone, Amount: $amount");
-                               // Navigator.pop(context);
-                             },
-                              child: Text("Proceed to Pay",style: TextStyle(color: appwhiteColor),),
+                                if (phone.isEmpty || amount.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Please fill in all fields")),
+                                  );
+                                } else {
+                                  print("pay");
+                                  Navigator.pop(context);
+                                  _startCheckout(amount, phone, "donation");
+                                }
+                              },
+                              child: Text(
+                                "Proceed to Pay",
+                                style: TextStyle(color: appwhiteColor),
+                              ),
                             ),
                           ],
                         );
@@ -148,26 +134,8 @@ class PaymentPage extends StatelessWidget {
                     );
                   },
                 ),
-                
                 const SizedBox(height: 16),
-                
-                // _buildPaymentOption(
-                //   context,
-                //   title: "Credit/Debit Card",
-                //   subtitle: "Pay with Visa, Mastercard or other cards",
-                //   icon: Icons.credit_card,
-                //   color: Colors.blue.shade400,
-                //   onTap: () {
-                //     // ScaffoldMessenger.of(context).showSnackBar(
-                //     //   const SnackBar(content: Text("Card payment selected")),
-                //     // );
-                //   },
-                // ),
-                
                 const Spacer(),
-                
-                // Helper Text
-              
               ],
             ),
           ),
@@ -252,42 +220,81 @@ class PaymentPage extends StatelessWidget {
       ),
     );
   }
+
   Future<void> _startCheckout(
-    
     String billAmount,
     String phone,
-    String billID,
+   String billID,
   ) async {
-     print("pay");
+    print("pay");
     try {
       final transactionInitialization =
           await MpesaFlutterPlugin.initializeMpesaSTKPush(
-            businessShortCode: "7926509",
-            transactionType: TransactionTypes.CustomerBuyGoodsOnline,
-            amount: double.parse('5.0'),
-            partyA: phone.replaceRange(0, 1, "254"),
-            partyB: "5619373",
-            callBackURL: Uri.parse("https:/echama.agilecode.co.ke/public/api/payment/callback"),
-            accountReference: "Payment",
-            phoneNumber:  phone.replaceRange(0, 1, "254"),
-            baseUri: Uri(scheme: "https", host: "api.safaricom.co.ke"),
-            transactionDesc: "Payment for Bill ID $billID",
-            passKey: mPassKey,
-          );
+        businessShortCode: "7926509",
+        transactionType: TransactionTypes.CustomerBuyGoodsOnline,
+        amount: double.parse(billAmount),
+        partyA: phone.replaceRange(0, 1, "254"),
+        partyB: "5619373",
+        callBackURL: Uri.parse("https://echama.agilecode.co.ke/public/api/payment/callback"),
+        accountReference: "Payment",
+        phoneNumber: phone.replaceRange(0, 1, "254"),
+        baseUri: Uri(scheme: "https", host: "api.safaricom.co.ke"),
+        transactionDesc: "Payment for Bill ID $billID",
+        passKey: mPassKey,
+      );
 
       final merchantRequestID = transactionInitialization['MerchantRequestID'];
-      print("Merchant Request ID: $merchantRequestID");
-      // await http.post(
-      //   Uri.parse("$api_root$updateMerchantRequest"),
-      //   body: {
-      //     "merchantRequestID": merchantRequestID,
-      //     "billID": billID.toString(),
-      //   },
-      //);
-     // _populateTransactions();
+      //print("Merchant Request ID: $merchantRequestID");
+
+      await _postDonationToDatabase(billAmount); 
     } catch (e) {
       print(e.toString());
-      //_showSnackBar("Error initiating payment: $e");
+    }
+  }
+
+  Future<void> _postDonationToDatabase(String amount ) async {
+    final userID = store.read('userID'); 
+    if (userID == null) {
+      print("User ID not found. Please log in again.");
+      return;
+    }
+
+    final url = Uri.parse("https://sanerylgloann.co.ke/donorApp/createDonations.php");
+
+    try {
+      final response = await http.post(
+        url,
+        body: {
+          'userID': userID.toString(),
+          'amount': amount, 
+          
+          'itemsID': "13",
+          'status': '',
+          'prefferedDate': '',
+          'prefferedTime': '',
+          'quantity': '',
+          'address': '',
+          'deliveryMethod': '',
+          'comments': '',
+
+
+          
+        },
+      );
+print(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success'] == true) {
+          print("Donation successfully posted to the database.");
+          amountController.clear(); // Clear the controller after successful submission
+        } else {
+          print("Failed to post donation: ${responseData['message']}");
+        }
+      } else {
+        print("Failed to post donation. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error posting donation to the database: $e");
     }
   }
 }

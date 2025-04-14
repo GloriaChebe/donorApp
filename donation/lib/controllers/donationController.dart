@@ -76,7 +76,8 @@ class DonationController extends GetxController {
     try {
       isLoadingUserDonations(true);
       final response = await http.get(
-        Uri.parse('https://sanerylgloann.co.ke/donorApp/readPersonalDonations.php?userID=26'),
+        Uri.parse('https://sanerylgloann.co.ke/donorApp/readPersonalDonations.php?user=$userID'),
+       
       );
       print(response.body);
 
@@ -103,6 +104,7 @@ class DonationController extends GetxController {
               status: item['status'] ?? '',
               comments: item['comments'] ?? '',
               timestamp: item['timestamp'] ?? '',
+              
             );
           }).toList();
           print("testing");
