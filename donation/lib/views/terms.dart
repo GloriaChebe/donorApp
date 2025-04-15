@@ -6,7 +6,8 @@ class TermsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,foregroundColor: appwhiteColor,
+        automaticallyImplyLeading: true,
+        foregroundColor: appwhiteColor,
         title: Text("Terms and Conditions", style: TextStyle(color: Colors.white)),
         backgroundColor: primaryColor,
       ),
@@ -29,61 +30,100 @@ class TermsPage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              "By using this application, you agree to be bound by these terms and conditions. If you do not agree, please do not use the application.",
+              "By using this donation platform, you agree to comply with and be bound by these Terms and Conditions. If you do not agree with any part of the terms, please do not use the platform.",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              "2. User Responsibilities",
+              "2. Purpose of the Platform",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              "You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.",
+              "This platform is designed to facilitate donations to support research, development, and innovation efforts at KIRDI)",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              "3. Prohibited Activities",
+              "3. User Responsibilities",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              "You agree not to engage in any activities that may harm the application, its users, or violate any applicable laws.",
+              "Users must provide accurate information during registration and while making donations. Users are responsible for maintaining the confidentiality of their account and activity.",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              "4. Limitation of Liability",
+              "4. Donation Guidelines",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              "The application is provided 'as is' without any warranties. We are not liable for any damages arising from the use of this application.",
+              "All donations made through this platform are voluntary. Donated items or funds must be genuine and not violate any local or international laws.",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              "5. Changes to Terms",
+              "5. Transparency and Tracking",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              "We reserve the right to modify these terms at any time. Continued use of the application constitutes acceptance of the updated terms.",
+              "Our platform provides status tracking for each donation .You will be notified of the progress of your donation, from pending to received.",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              "6. Contact Us",
+              "6. Prohibited Activities",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              "If you have any questions about these terms, please contact us at support@example.com.",
+              "You may not use this platform for any fraudulent, illegal, or unauthorized purpose. Misuse may lead to account suspension or legal action.",
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "7. Data Privacy",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "We value your privacy. Any personal information collected is used solely for donation management and communication purposes. We do not share your information with third parties without consent.",
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "8. Limitation of Liability",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "This platform is provided 'as is' without warranties. We are not liable for any indirect, incidental, or consequential damages arising from the use of the platform.",
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "9. Modification of Terms",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "We reserve the right to modify these terms at any time. Continued use of the platform indicates acceptance of any changes made.",
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "10. Contact Us",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "If you have any questions or concerns about these Terms and Conditions, please contact us at glosschebet@gmail.com.",
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 24),
-           
           ],
         ),
       ),

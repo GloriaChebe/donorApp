@@ -91,9 +91,9 @@ class _NotificationPageState extends State<NotificationPage> {
           }
         } catch (e) {
           print('Invalid JSON: ${response.body}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Unexpected server response')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text('Unexpected server response')),
+          // );
         }
       } else {
         print('Failed to send reply. Status code: ${response.statusCode}');
@@ -167,6 +167,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     children: [
                       if (!isRead)
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
                           onPressed: () async {
                             final userID = message['userID'];
                             final replyMessage = _responseController.text.trim();
@@ -184,7 +185,7 @@ class _NotificationPageState extends State<NotificationPage> {
                               );
                             }
                           },
-                          child: Text('Send & Mark Read'),
+                          child: Text('Send & Mark Read',style: TextStyle(color: appwhiteColor),),
                         ),
                       SizedBox(width: 8),
                       ElevatedButton(

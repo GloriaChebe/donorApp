@@ -19,7 +19,7 @@ class navPage extends StatelessWidget {
   final List<Widget> screens = [
     HomePage(),
     CategoriesPage(),
-    Statuspage(donationId: '234444', itemName: 'milk', quantity: 2, pickupOption: 'dropoff', currentStatus: 'Pending',),
+    Statuspage(),
     ProfilePage(), // Ensure ProfilePage is included here
   ];
 

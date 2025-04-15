@@ -279,12 +279,13 @@ class ContactUsPage extends StatelessWidget {
         }
       },
       child: Card(
+       
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Column(
             children: [
               Container(

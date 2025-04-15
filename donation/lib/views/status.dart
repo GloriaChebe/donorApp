@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/donationController.dart';
+import 'package:flutter_application_1/views/categories.dart';
+import 'package:flutter_application_1/views/home/homePage.dart';
+import 'package:flutter_application_1/views/nav.dart';
 import 'package:flutter_application_1/widgets/statusWidget.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -9,20 +14,20 @@ import 'package:step_progress_indicator/step_progress_indicator.dart' as step_pr
 final DonationController donationController=DonationController();
 var store= GetStorage();
 class Statuspage extends StatefulWidget {
-  final String donationId;
-  final String currentStatus;
-  final String itemName;
-  final int quantity;
-  final String pickupOption;
-  final DateTime? pickupDate;
-  final TimeOfDay? pickupTime;
+   var donationId;
+   var currentStatus;
+   var itemName;
+   var quantity;
+   var pickupOption;
+   DateTime? pickupDate;
+   TimeOfDay? pickupTime;
 
   Statuspage({
-    required this.donationId,
-    required this.currentStatus,
-    required this.itemName,
-    required this.quantity,
-    required this.pickupOption,
+    this.donationId,
+     this.currentStatus,
+     this.itemName,
+    this.quantity,
+     this.pickupOption,
     this.pickupDate,
     this.pickupTime,
   });
@@ -41,12 +46,32 @@ class StatusPage extends State<Statuspage> {
     donationController.fetchPersonalDonations(store.read('userID'));
    
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        foregroundColor: appwhiteColor,
-        title: Text('Donation Status', style: TextStyle(color: Colors.white)),
-        backgroundColor: primaryColor,
+     appBar: AppBar(
+  automaticallyImplyLeading: false,
+  // leading: IconButton(
+  //   icon: Icon(Icons.arrow_back, color: appwhiteColor),
+  //   onPressed: () {
+  //     Navigator.pop(context); // or Navigator.pushNamed(context, '/categories');
+  //   },
+  // ),
+  actions: [
+    TextButton(
+      onPressed: () {
+       // Navigator.pushNamed(context, '/categories'); // replace with your actual route
+        //Get.to(CategoriesPage()); 
+        Get.to(navPage());
+      },
+      child: Text(
+        'Back',
+        style: TextStyle(color: Colors.white, fontSize: 16),
       ),
+    ),
+  ],
+  foregroundColor: appwhiteColor,
+  title: Text('Donation Status', style: TextStyle(color: Colors.white)),
+  backgroundColor: primaryColor,
+),
+
       body:Obx(()=> ListView.builder(
           itemCount: donationController.userDonations.length, // Only one item in this case
           itemBuilder:   (context, index) => Column(

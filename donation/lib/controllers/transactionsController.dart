@@ -9,7 +9,7 @@ class TransactionsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchTransactions(); // Fetch transactions when the controller is initialized
+    fetchTransactions(); 
   }
 
   Future<void> fetchTransactions() async {
@@ -18,7 +18,7 @@ class TransactionsController extends GetxController {
     try {
       isLoading(true);
       final response = await http.get(Uri.parse(url));
-
+         print(response.body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success'] == 1) {

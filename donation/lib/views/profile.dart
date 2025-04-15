@@ -11,17 +11,22 @@ import 'package:get/get_core/src/get_main.dart';
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   title: Text(
-      //     "Profile",
-      //     style: TextStyle(fontWeight: FontWeight.bold),
-      //   ),
-      //   backgroundColor: Colors.blue[700],
+      
+      //backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        title: Center(
+          child: Text(
+            "Profile",
+            style: TextStyle(fontWeight: FontWeight.bold,color: appwhiteColor),
+          ),
+        ),
+        backgroundColor:primaryColor,
        
-      // ),
+      ),
       body: ListView(
         children: [
           // Profile header with avatar

@@ -76,7 +76,7 @@ class DonationController extends GetxController {
     try {
       isLoadingUserDonations(true);
       final response = await http.get(
-        Uri.parse('https://sanerylgloann.co.ke/donorApp/readPersonalDonations.php?user=$userID'),
+        Uri.parse('https://sanerylgloann.co.ke/donorApp/readPersonalDonations.php?userID=$userID'),
        
       );
       print(response.body);

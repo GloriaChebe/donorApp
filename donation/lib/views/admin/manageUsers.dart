@@ -10,6 +10,10 @@ class ManageUsersPage extends StatefulWidget {
 
 class _ManageUsersPageState extends State<ManageUsersPage> {
   late Future<List<Map<String, String>>> _usersFuture;
+  List<Map<String, String>> _allUsers = [];
+  List<Map<String, String>> _filteredUsers = [];
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -25,20 +29,21 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
 
-        // Check if the response contains a "data" key
         if (data['data'] != null && data['data'] is List) {
           final List<dynamic> users = data['data'];
-          return users.map((user) {
+          final userList = users.map((user) {
             return {
               'id': (user['userID'] ?? 'N/A').toString(),
-              // Combine firstName and lastName for the name field
               'name': '${user['firstName'] ?? ''} ${user['lastName'] ?? ''}'.trim(),
               'email': (user['email'] ?? 'N/A').toString(),
               'contacts': (user['phoneNumber'] ?? 'N/A').toString(),
-              // Map role 1 to "Admin" and 0 to "Donor"
               'role': (user['role'] == '1') ? 'Admin' : 'Donor',
             };
           }).toList();
+
+          _allUsers = userList;
+          _filteredUsers = userList;
+          return userList;
         } else {
           throw Exception('Invalid response structure: "data" key not found');
         }
@@ -51,6 +56,20 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     }
   }
 
+  void _filterUsers(String query) {
+    final filtered = _allUsers.where((user) {
+      final lowerQuery = query.toLowerCase();
+      return user['name']!.toLowerCase().contains(lowerQuery) ||
+          user['email']!.toLowerCase().contains(lowerQuery) ||
+          user['contacts']!.toLowerCase().contains(lowerQuery) ||
+          user['role']!.toLowerCase().contains(lowerQuery);
+    }).toList();
+
+    setState(() {
+      _filteredUsers = filtered;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,14 +77,34 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: appwhiteColor),
           onPressed: () {
-            Navigator.pushNamed(context, '/admin'); // Navigate to Admin Page
+            Navigator.pushNamed(context, '/admin');
           },
         ),
-        title: Text(
-          'Users',
-          style: TextStyle(color: appwhiteColor),
-        ),
+        title: !_isSearching
+            ? Text('Users', style: TextStyle(color: appwhiteColor))
+            : TextField(
+                controller: _searchController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search users...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                onChanged: _filterUsers,
+              ),
         backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                _searchController.clear();
+                _filteredUsers = _allUsers;
+              });
+            },
+          )
+        ],
       ),
       body: FutureBuilder<List<Map<String, String>>>(
         future: _usersFuture,
@@ -77,9 +116,8 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No users found.'));
           } else {
-            final users = snapshot.data!;
             return SingleChildScrollView(
-              scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+              scrollDirection: Axis.horizontal,
               child: DataTable(
                 columns: [
                   DataColumn(label: Text('User ID', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -88,7 +126,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                   DataColumn(label: Text('Contacts', style: TextStyle(fontWeight: FontWeight.bold))),
                   DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
                 ],
-                rows: users.map((user) {
+                rows: _filteredUsers.map((user) {
                   return DataRow(cells: [
                     DataCell(Text(user['id'] ?? 'N/A')),
                     DataCell(Text(user['name'] ?? 'N/A')),

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/itemController.dart';
 import 'package:flutter_application_1/views/donate.dart';
@@ -135,12 +136,16 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
                   children: [
                     
                     TextField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
+  controller: nameController,
+  decoration: InputDecoration(
+    labelText: 'Name',
+    border: OutlineInputBorder(),
+  ),
+  inputFormatters: [
+    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+  ],
+),
+
                     SizedBox(height: 16),
 
                     //categories
@@ -165,16 +170,16 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
                       hint: Text('Select a category'),
                     ),
                     SizedBox(height: 16),
-                    if (selectedCategory == 'Money')
-                      TextField(
-                        controller: amountController,
+                    // if (selectedCategory == 'Money')
+                    //   TextField(
+                    //     controller: amountController,
 
-                        decoration: InputDecoration(
-                          labelText: 'Enter Amount',
-                          border: OutlineInputBorder(),
-                        ),
-                        //keyboardType: TextInputType.number,
-                      ),
+                    //     decoration: InputDecoration(
+                    //       labelText: 'Enter Amount',
+                    //       border: OutlineInputBorder(),
+                    //     ),
+                    //     //keyboardType: TextInputType.number,
+                    //   ),
                     SizedBox(height: 16),
 
                     //subcategory
@@ -235,7 +240,7 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
                             await _pickImage();
                             setState(() {});
                           },
-                          child: Text('Upload',style: TextStyle(color: appwhiteColor),),
+                          child: Text('Select image',style: TextStyle(color: appwhiteColor,fontSize: 12),),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor,
                           ),
@@ -248,19 +253,48 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
               actions: [
                 TextButton(
                   onPressed: () {
+                    nameController.clear(); // Clear the name field
+                    selectedImage = null; // Clear the selected image
+                     // Clear the form fields
                     Navigator.of(context).pop(); // Close the dialog
                   },
                   child: Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    
-                  
-  addItems(context);
+  if (nameController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Name is required!'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
+  }
 
-                    // Close the dialog after adding the item
-                    Navigator.of(context).pop();
-                  },
+ 
+
+  if (selectedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please select an image!'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
+  }
+
+  addItems(context);
+  Navigator.of(context).pop();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Added successfully!'),
+      duration: Duration(seconds: 1),
+      backgroundColor: secondaryColor,
+    ),
+  );
+},
+
                   child: Text(
                     'Add',
                     style: TextStyle(color: appwhiteColor),
@@ -294,7 +328,7 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
     request.fields['name'] = nameController.text;
     request.fields['category'] = selectedCategory ?? '';
     request.fields['mostRequired'] = urgency??'' ;
-     request.fields['amount'] = amountController.text;
+     //request.fields['amount'] = amountController.text;
 
     // Attach image file
     var imageFile = await http.MultipartFile.fromPath(
@@ -314,6 +348,8 @@ class _CategoriesAdminState extends State<CategoriesAdmin> {
     }
   }
 }
+
+
 
 // Category Filter Chips Widget
 class _CategoryFilterChips extends StatelessWidget {
@@ -556,6 +592,13 @@ class ItemSearchDelegate extends SearchDelegate<String> {
       },
     );
   }
+// void _clearFormFields() {
+//   nameController.clear();
+  
+//   selectedImage = null;
+//   selectedCategory = 'Food';
+//   urgency = 'Urgent';
+// }
 
 
  

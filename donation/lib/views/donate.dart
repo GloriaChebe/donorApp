@@ -16,6 +16,7 @@ import 'package:get/get_connect/http/src/response/response.dart' as get_response
 import 'package:get_storage/get_storage.dart';
 
 import 'package:http/http.dart' as http;
+var context;
 
 var storage = GetStorage();
 class DonatePage extends StatefulWidget {
@@ -53,7 +54,9 @@ class _DonatePageState extends State<DonatePage> {
 
   @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
+    context = context;
     final primaryColor = color.primaryColor; // Deep blue color
 
     return Scaffold(
@@ -131,53 +134,62 @@ class _DonatePageState extends State<DonatePage> {
                         ),
                         SizedBox(height: 16),
                         // Quantity selector
-                        Row(
-                          children: [
-                            Text(
-                              'Quantity:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.remove),
-                                    onPressed: _quantity > 1
-                                        ? () => setState(() => _quantity--)
-                                        : null,
-                                    constraints: BoxConstraints(minWidth: 36, minHeight: 36),
-                                    padding: EdgeInsets.zero,
-                                    iconSize: 18,
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8),
-                                    child: Text(
-                                      '$_quantity',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.add),
-                                    onPressed: () => setState(() => _quantity++),
-                                    constraints: BoxConstraints(minWidth: 36, minHeight: 36),
-                                    padding: EdgeInsets.zero,
-                                    iconSize: 18,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                       Row(
+  children: [
+    Text(
+      'Quantity:',
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    SizedBox(width: 16),
+    Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.remove),
+            onPressed: _quantity > 1
+                ? () => setState(() => _quantity--)
+                : null,
+            constraints: BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: EdgeInsets.zero,
+            iconSize: 18,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              '$_quantity',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => setState(() => _quantity++),
+            constraints: BoxConstraints(minWidth: 36, minHeight: 36),
+            padding: EdgeInsets.zero,
+            iconSize: 18,
+          ),
+        ],
+      ),
+    ),
+    SizedBox(width: 8),
+    Text(
+      'kgs',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ],
+),
+
                       ],
                     ),
                   ),
@@ -427,16 +439,17 @@ class _DonatePageState extends State<DonatePage> {
                                 'quantity': _quantity.toString(),
                                 'status': 'Pending',
                                 'comments': _additionalNotesController.text,
+                                'amount':"0",
                               },
                             );
 
-                            print('Response: ${response.body}');
+                           print('Response: ${response.body}');
                             if (response.statusCode == 200) {
                               var res = jsonDecode(response.body);
                               print('Response: $res');
 
                               if (res['success'] == 1) {
-                                // Show the Thank You dialog
+                                //Get. snackbar("success", message)
                                 _showThankYouDialog(context);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -496,71 +509,71 @@ class _DonatePageState extends State<DonatePage> {
     );
   }
 
-  void _submitDonation() {
-    _donationId = 'DON${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-    _showSubmissionConfirmation();
-  }
+  // void _submitDonation() {
+  //   _donationId = 'DON${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+  //   //_showSubmissionConfirmation();
+  // }
 
-  void _showSubmissionConfirmation() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Your donation request has been submitted!',),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.green.shade700,
-                  size: 48,
-                ),
-              ),
-              SizedBox(height: 16),
+  // void _showSubmissionConfirmation() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Your donation request has been submitted!',),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.all(16),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.green.shade100,
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               child: Icon(
+  //                 Icons.check_circle_outline,
+  //                 color: Colors.green.shade700,
+  //                 size: 48,
+  //               ),
+  //             ),
+  //             SizedBox(height: 16),
              
-              Text(
-                'Donation ID: $_donationId',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Your donation is pending approval from our administrators. You can check the status of your donation on the app at any time.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade700),
-              ),
-              SizedBox(height: 16),
+  //             Text(
+  //               'Donation ID: $_donationId',
+  //               textAlign: TextAlign.center,
+  //               style: TextStyle(fontWeight: FontWeight.w500),
+  //             ),
+  //             SizedBox(height: 16),
+  //             Text(
+  //               'Your donation is pending approval from our administrators. You can check the status of your donation on the app at any time.',
+  //               textAlign: TextAlign.center,
+  //               style: TextStyle(color: Colors.grey.shade700),
+  //             ),
+  //             SizedBox(height: 16),
               
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: Text('View Status',style: TextStyle(color: appwhiteColor),),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _navigateToDonationStatus();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: Text('Close'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //           ElevatedButton(
+  //             child: Text('View Status',style: TextStyle(color: appwhiteColor),),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               _navigateToDonationStatus();
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: primaryColor,
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _navigateToDonationStatus() {
     Get.to(() => Statuspage(
@@ -627,18 +640,18 @@ class _DonatePageState extends State<DonatePage> {
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade100,
+                  color: primaryColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.check_circle_outline,
-                  color: Colors.green.shade700,
+                  color: appwhiteColor,
                   size: 48,
                 ),
               ),
               SizedBox(height: 16),
               Text(
-                'Your donation of $_quantity ${widget.itemName}(s) has been confirmed!',
+                'Your donation of $_quantity (KGs) ${widget.itemName} is yet to be approved!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16),
               ),
@@ -651,9 +664,9 @@ class _DonatePageState extends State<DonatePage> {
                 )
               else
                 Text(
-                  'Please bring your items to our donation center during opening hours.',
+                  'Please bring your items to our donation center during opening hours upon approval .',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey.shade700),
+                  style: TextStyle(color: appBlackColor,)
                 ),
               SizedBox(height: 16),
               // Text(
@@ -671,13 +684,15 @@ class _DonatePageState extends State<DonatePage> {
             //   },
             // ),
             ElevatedButton(
-              child: Text('Done'),
+              child: Text('ViewStatus',style: TextStyle(color: appwhiteColor),),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Return to previous screen
+                 Get.to(() => Statuspage());
+                // Handle viewing status
+
+               // Return to previous screen
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF1565C0),
+                backgroundColor:primaryColor,
               ),
             ),
           ],

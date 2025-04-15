@@ -170,166 +170,176 @@ class DonationList extends StatelessWidget {
           itemBuilder: (context, index) {
             final donation = donationController.donations[index];
             return Card(
-              margin: EdgeInsets.all(8.0),
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Donor: ${donation.firstName} ${donation.lastName}',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Donation Type: ${donation.deliveryMethod}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Date: ${donation.preferredDate}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Status: ${donation.status}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: donation.status == 'Pending'
-                            ? Colors.orange
-                            : donation.status == 'Approved'
-                                ? Colors.green
-                                : donation.status == 'Rejected'
-                                ? Colors.red
-                                : donation.status == 'PickedUp'
-                                    ? Colors.blue
-                                    : Colors.black,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (onApprove != null)
-                          ElevatedButton(
-                            onPressed:()async{
-                              var res= await http.get(
-                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Approved'),
-                              );
-                              if (res.statusCode==200){
-                                donationController.fetchDonations("Pending");
-                                Get.snackbar('Success', 'Donation Approved',
-                                  backgroundColor: Colors.green,
-                                  colorText: Colors.white,
-                                );
-                              }},
-
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 4, 101, 22),
-                            ),
-                            child: Text(
-                              'Approve',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        if (onReject != null)
-                          SizedBox(width: 8),
-                        if (onReject != null)
-                          ElevatedButton(
-                           onPressed:()async{
-                              var res= await http.get(
-                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Rejected'),
-                              );
-                              if (res.statusCode==200){
-                                donationController.fetchDonations("Pending");
-                                Get.snackbar('Success', 'Donation Rejected',
-                                  //backgroundColor: Colors.green,
-                                  colorText: Colors.white,
-                                );
-                              }},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:Color.fromARGB(255, 232, 12, 12),
-                            ),
-                            child: Text(
-                              'Reject',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        if (donation.status == 'Rejected')
-                          ElevatedButton(
-                            onPressed: () async {
-                              var res = await http.get(
-                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Pending'),
-                              );
-                              if (res.statusCode == 200) {
-                                donationController.fetchDonations("Rejected");
-                                Get.snackbar('Notice', 'Donation Revoked',
-                                  colorText: Colors.white,
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
-                            ),
-                            child: Text(
-                              'Revoke',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        //if (onMarkAsPickedUp != null)
-                          SizedBox(width: 8),
-                        if (onMarkAsPickedUp != null)
-                          ElevatedButton(
-                            onPressed:()async{
-                              var res= await http.get(
-                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=PickedUp'),
-                              );
-                              if (res.statusCode==200){
-                                donationController.fetchDonations("Approved");
-                                Get.snackbar('Success', 'on transit',
-                                  //backgroundColor: Colors.green,
-                                  colorText: Colors.white,
-                                );
-                              }},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:secondaryColor ,
-                            ),
-                            child: Text(
-                              'Mark as Picked Up',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        if (donation.status == 'PickedUp')
-                          ElevatedButton(
-                            onPressed:()async{
-                              var res= await http.get(
-                                Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Completed'),
-                              );
-                              if (res.statusCode==200){
-                                donationController.fetchDonations("PickedUp");
-                                Get.snackbar('Success', 'completed',
-                                  //backgroundColor: Colors.green,
-                                  colorText: Colors.white,
-                                );
-                              }},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: secondaryColor,
-                            ),
-                            child: Text(
-                              'Mark as Completed',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
+  margin: EdgeInsets.all(8.0),
+  elevation: 4,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+  child: Padding(
+    padding: const EdgeInsets.all(12.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Donor: ${donation.firstName?.isNotEmpty == true ? donation.firstName : 'N/A'} '
+          '${donation.lastName?.isNotEmpty == true ? donation.lastName : 'N/A'}, '
+          '${donation.userID ?? 'N/A'}',
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 4),
+        Text(
+          'Donation ID: ${donation.donationsID ?? 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Item: ${donation.name?.isNotEmpty == true ? donation.name : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Quantity: ${donation.quantity?.toString().isNotEmpty == true ? donation.quantity : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Address: ${donation.address?.isNotEmpty == true ? donation.address : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Delivery Method: ${donation.deliveryMethod == '0' ? 'Drop Off' : donation.deliveryMethod == '1' ? 'Schedule Pickup' : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Preferred Date: ${donation.preferredDate?.isNotEmpty == true ? donation.preferredDate : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Preferred Time: ${donation.preferredTime?.isNotEmpty == true ? donation.preferredTime : 'N/A'}',
+          style: TextStyle(fontSize: 12),
+        ),
+        Text(
+          'Status: ${donation.status ?? 'N/A'}',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: donation.status == 'Pending'
+                ? Colors.orange
+                : donation.status == 'Approved'
+                    ? Colors.green
+                    : donation.status == 'Rejected'
+                        ? Colors.red
+                        : donation.status == 'PickedUp'
+                            ? Colors.blue
+                            : Colors.black,
+          ),
+        ),
+        SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (onApprove != null)
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await http.get(
+                    Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Approved'),
+                  );
+                  if (res.statusCode == 200) {
+                    donationController.fetchDonations("Pending");
+                    Get.snackbar('Success', 'Donation Approved',
+                        backgroundColor: secondaryColor,
+                        colorText: Colors.white);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 4, 101, 22),
                 ),
+                child: Text('Approve', style: TextStyle(color: Colors.white)),
               ),
-            );
+            if (onReject != null) SizedBox(width: 8),
+            if (onReject != null)
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await http.get(
+                    Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Rejected'),
+                  );
+                  if (res.statusCode == 200) {
+                    donationController.fetchDonations("Pending");
+                    Get.snackbar('Success', 'Donation Rejected',
+                        colorText: Colors.white
+                        ,backgroundColor: secondaryColor)
+                      ;
+                       
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 232, 12, 12),
+                ),
+                child: Text('Reject', style: TextStyle(color: Colors.white)),
+              ),
+            if (donation.status == 'Rejected') SizedBox(width: 8),
+            if (donation.status == 'Rejected')
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await http.get(
+                    Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Pending'),
+                  );
+                  if (res.statusCode == 200) {
+                    donationController.fetchDonations("Rejected");
+                    Get.snackbar('Notice', 'Donation Revoked',
+                        colorText: Colors.white,
+                        backgroundColor: secondaryColor);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                ),
+                child: Text('Revoke', style: TextStyle(color: Colors.white)),
+              ),
+            if (onMarkAsPickedUp != null) SizedBox(width: 8),
+            if (onMarkAsPickedUp != null)
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await http.get(
+                    Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=PickedUp'),
+                  );
+                  if (res.statusCode == 200) {
+                    donationController.fetchDonations("Approved");
+                    Get.snackbar('Success', 'On Transit',
+                        colorText: Colors.white
+                        ,backgroundColor: secondaryColor);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                ),
+                child: Text('Mark as Picked Up',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            if (donation.status == 'PickedUp') SizedBox(width: 8),
+            if (donation.status == 'PickedUp')
+              ElevatedButton(
+                onPressed: () async {
+                  var res = await http.get(
+                    Uri.parse('https://sanerylgloann.co.ke/donorApp/rejectApprove.php?donationsID=${donation.donationsID}&status=Completed'),
+                  );
+                  if (res.statusCode == 200) {
+                    donationController.fetchDonations("PickedUp");
+                    Get.snackbar('Success', 'Completed',
+                        colorText: Colors.white,
+                        backgroundColor: secondaryColor);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: secondaryColor,
+                ),
+                child:
+                    Text('Mark as Completed', style: TextStyle(color: Colors.white)),
+              ),
+          ],
+        ),
+      ],
+    ),
+  ),
+);
+
           },
         ),
         ),

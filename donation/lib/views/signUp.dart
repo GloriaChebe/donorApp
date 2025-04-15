@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,20 +23,18 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       body: Stack(
         children: [
-          
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                primaryColor,
-                secondaryColor,
+                  primaryColor,
+                  secondaryColor,
                 ],
               ),
             ),
           ),
-         
           Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -53,24 +51,22 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          
                           CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.blue.shade100,
                             child: Icon(
                               Icons.person_add,
                               size: 50,
-                              color:primaryColor,
+                              color: primaryColor,
                             ),
                           ),
                           const SizedBox(height: 20),
-                          
                           Text(
                             'Create an Account',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color:primaryColor,
+                              color: primaryColor,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -83,12 +79,16 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                           const SizedBox(height: 30),
-                         
+
+                          // First and Last Name
                           Row(
                             children: [
                               Expanded(
                                 child: TextFormField(
                                   controller: firstNameController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                                  ],
                                   decoration: InputDecoration(
                                     labelText: 'First Name',
                                     prefixIcon: Icon(Icons.person),
@@ -100,6 +100,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter your first name';
                                     }
+                                    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+                                      return 'Only alphabets are allowed';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -108,6 +111,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               Expanded(
                                 child: TextFormField(
                                   controller: lastNameController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')),
+                                  ],
                                   decoration: InputDecoration(
                                     labelText: 'Last Name',
                                     prefixIcon: Icon(Icons.person),
@@ -119,13 +125,18 @@ class _SignUpPageState extends State<SignUpPage> {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter your last name';
                                     }
+                                    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
+                                      return 'Only alphabets are allowed';
+                                    }
                                     return null;
                                   },
                                 ),
                               ),
                             ],
                           ),
+
                           const SizedBox(height: 20),
+
                           // Email Field
                           TextFormField(
                             controller: emailController,
@@ -146,13 +157,15 @@ class _SignUpPageState extends State<SignUpPage> {
                               return null;
                             },
                           ),
+
                           const SizedBox(height: 20),
-                          // Contacts Field
+
+                          // Phone Number
                           TextFormField(
                             controller: phoneController,
                             decoration: InputDecoration(
                               labelText: 'Phone Number',
-                              hintText: 'e.g., 0700 000 000',
+                              hintText: 'e.g., 0700000000',
                               prefixIcon: Icon(Icons.phone),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -162,14 +175,16 @@ class _SignUpPageState extends State<SignUpPage> {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your phone number';
                               }
-                              if (!RegExp(r'^\d{9,10}$').hasMatch(value)) {
+                              if (!RegExp(r'^\d{10}$').hasMatch(value)) {
                                 return 'Enter a valid phone number';
                               }
                               return null;
                             },
                           ),
+
                           const SizedBox(height: 20),
-                          // Password Field
+
+                          // Password
                           TextFormField(
                             controller: passwordController,
                             obscureText: passwordVisibility,
@@ -202,12 +217,13 @@ class _SignUpPageState extends State<SignUpPage> {
                               return null;
                             },
                           ),
+
                           const SizedBox(height: 30),
+
                           // Sign Up Button
                           ElevatedButton(
-                            onPressed: () async{
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-
                                 http.Response response = await http.post(
                                   Uri.parse('https://sanerylgloann.co.ke/donorApp/createUser.php'),
                                   body: {
@@ -218,40 +234,29 @@ class _SignUpPageState extends State<SignUpPage> {
                                     'password': passwordController.text,
                                   },
                                 );
-                                if(response.statusCode == 200) {
-                                  // Handle successful sign-up
-                                  var res=jsonDecode(response.body);
 
-                                  if(res['success'] == 1) {
-                                     Navigator.pushReplacementNamed(context, '/login');
-                                    // User created successfully
+                                if (response.statusCode == 200) {
+                                  var res = jsonDecode(response.body);
+                                  if (res['success'] == 1) {
+                                    Navigator.pushReplacementNamed(context, '/login');
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('registration successful')),
-                                          
+                                      SnackBar(content: Text('Registration successful')),
                                     );
                                   } else {
-                                    // User already exists
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error Ocurred')),
+                                      SnackBar(content: Text('Error occurred')),
                                     );
                                   }
-                                 
-                                  
                                 } else {
-                                  // Handle error
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Sign Up Failed')),
                                   );
                                 }
-                            
                               }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 12,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -265,7 +270,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 20),
+
                           // Login Link
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

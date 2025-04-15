@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/configs/constants.dart';
 import 'package:flutter_application_1/controllers/donationController.dart';
+import 'package:flutter_application_1/controllers/moneyReport.dart';
 import 'package:flutter_application_1/controllers/reportsController.dart';
 import 'package:flutter_application_1/controllers/statisticsController.dart';
+import 'package:flutter_application_1/controllers/transactionsController.dart';
 import 'package:flutter_application_1/models/donationModel.dart';
 import 'package:flutter_application_1/views/admin/notification.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -25,7 +26,6 @@ class _AdminPageState extends State<AdminPage> {
   @override
   void initState() {
     super.initState();
-   // statiticsController.fetchDashboardSummary();
     _fetchUnreadCount();
   }
 
@@ -62,7 +62,6 @@ class _AdminPageState extends State<AdminPage> {
                   context,
                   MaterialPageRoute(builder: (context) => NotificationPage()),
                 );
-                // Refresh unread count after returning from NotificationPage
                 _fetchUnreadCount();
               },
             ),
@@ -76,17 +75,15 @@ class _AdminPageState extends State<AdminPage> {
         ],
       ),
       body: Container(
-         decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.blue.shade50, Colors.white],
-            ),
-         ),
-         child: Column(
-         
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: Column(
           children: [
-            // Key Statistics Card
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -145,7 +142,7 @@ class _AdminPageState extends State<AdminPage> {
                             ),
                             _buildStatisticItem(
                               title: 'Wallet Balance',
-                              value: 'ksh ${summary.amount}', // Placeholder for now
+                              value: 'ksh ${summary.amount}',
                               icon: Icons.account_balance_wallet,
                               color: Colors.purple,
                             ),
@@ -157,7 +154,6 @@ class _AdminPageState extends State<AdminPage> {
                 ),
               ),
             ),
-            // Admin Cards
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
@@ -173,7 +169,7 @@ class _AdminPageState extends State<AdminPage> {
                       Navigator.pushNamed(context, '/manageDonations');
                     },
                   ),
-                 _buildAdminCard(
+                  _buildAdminCard(
                     context,
                     title: 'Manage Items',
                     icon: Icons.inventory,
@@ -186,11 +182,14 @@ class _AdminPageState extends State<AdminPage> {
                     title: 'Wallet',
                     icon: Icons.wallet,
                     onTap: () {
+                      //Get.put(TransactionsController());
                       Navigator.pushNamed(context, '/manageWallet');
+                       binding: BindingsBuilder(() {
+                       Get.put(TransactionsController());
+                       });
                     },
                   ),
-                  
-                   _buildAdminCard(
+                  _buildAdminCard(
                     context,
                     title: 'Users',
                     icon: Icons.people,
@@ -201,7 +200,6 @@ class _AdminPageState extends State<AdminPage> {
                 ],
               ),
             ),
-            // Donations Report Card
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -227,9 +225,7 @@ class _AdminPageState extends State<AdminPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/moneyDonations');
-                            },
+                            onPressed: generateMoneyDonationsPDFReport,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               shape: RoundedRectangleBorder(
@@ -237,22 +233,21 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             icon: Icon(Icons.attach_money, color: Colors.white),
-                            label: Text('Money Donations',style: TextStyle(color: appwhiteColor),),
+                            label: Text('Money Donations', style: TextStyle(color: appwhiteColor)),
                           ),
-                         ElevatedButton.icon(
-                      onPressed: () async {
-                         final ReportsController controller = Get.put(ReportsController());
-                          await controller.fetchDonations(); // or any status you want
-                               await generateItemDonationsPdf(controller.donations);
-                                 },
-                           style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                               ),
-                   icon: Icon(Icons.card_giftcard, color: Colors.white),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final ReportsController controller = Get.put(ReportsController());
+                              await controller.fetchDonations();
+                              await generateItemDonationsPdf(controller.donations);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            icon: Icon(Icons.card_giftcard, color: Colors.white),
                             label: Text('Item Donations', style: TextStyle(color: appwhiteColor)),
-                                      ),
-
+                          ),
                         ],
                       ),
                     ],
@@ -262,8 +257,8 @@ class _AdminPageState extends State<AdminPage> {
             ),
           ],
         ),
-            ),
-      );
+      ),
+    );
   }
 
   Widget _buildStatisticItem({
@@ -327,8 +322,7 @@ class _AdminPageState extends State<AdminPage> {
   }
 }
 
-
-
+// Generate Item Donations PDF
 Future<void> generateItemDonationsPdf(List<Donation> donations) async {
   final pdf = pw.Document();
 
@@ -367,7 +361,68 @@ Future<void> generateItemDonationsPdf(List<Donation> donations) async {
               donation.deliveryMethod,
               donation.preferredDate,
               donation.preferredTime,
-              donation.timestamp, // Assuming this holds timestamp info
+              donation.timestamp,
+            ];
+          }).toList(),
+        )
+      ],
+    ),
+  );
+
+  await Printing.layoutPdf(
+    onLayout: (PdfPageFormat format) async => pdf.save(),
+  );
+}
+
+// Generate Money Donations PDF
+Future<void> generateMoneyDonationsPDFReport() async {
+  final controller = Get.put(MoneyReportsController());
+
+  await controller.fetchMoneyDonations();
+
+  if (controller.moneyDonations.isEmpty) {
+    Get.snackbar("No Data", "No money donations available to export.");
+    return;
+  }
+
+  final pdf = pw.Document();
+
+  pdf.addPage(
+    pw.MultiPage(
+      build: (pw.Context context) => [
+        pw.Text('Money Donations Report',
+            style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 20),
+        pw.Table.fromTextArray(
+          border: pw.TableBorder.all(),
+          cellStyle: pw.TextStyle(fontSize: 10),
+          headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+          headers: [
+            'Donation ID',
+            'Item ID',
+            'User ID',
+            'Name',
+            'Amount',
+            'Status',
+            'Address',
+            'Delivery Method',
+            'Preferred Date',
+            'Preferred Time',
+            'Time Paid',
+          ],
+          data: controller.moneyDonations.map((donation) {
+            return [
+              donation.donationsID,
+              donation.itemsID,
+              donation.userID,
+              '${donation.firstName} ${donation.lastName}',
+              donation.amount ?? '0',
+              donation.status,
+              donation.address,
+              donation.deliveryMethod,
+              donation.preferredDate,
+              donation.preferredTime,
+              donation.timestamp,
             ];
           }).toList(),
         )

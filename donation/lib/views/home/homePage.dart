@@ -91,7 +91,9 @@ class _HomePageState extends State<HomePage> {
                 if (itemController.urgentItems.isEmpty) {
                   return Center(child: Text("No urgent items available"));
                 }
+                
                 return ListView.builder(
+                 // var item = itemController.filteredItems[index];
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   itemCount: itemController.urgentItems.length,
@@ -217,7 +219,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: 8),
           ElevatedButton(
             onPressed: () {
-              if (product.name == "Money") {
+              if (product.category == "Money") {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PaymentPage()),
@@ -226,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DonatePage(itemName: product.name,itemsID: product.itemsID,  ),
+                    builder: (context) => DonatePage(itemName: product.name,itemsID: product.itemsID,itemImage:product.image,  ),
                   ),
                 );
               }

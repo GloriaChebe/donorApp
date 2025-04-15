@@ -45,7 +45,7 @@ class Pages {
      GetPage(name: homepage, page: () => HomePage()),
       GetPage(name: navpage, page: () => navPage()),
      GetPage(name: categories, page: () => CategoriesPage()),
-    // GetPage(name: status, page: () => StatusPage()),
+     GetPage(name: status, page: () => Statuspage()),
      GetPage(name: profile, page: () => ProfilePage()),
      GetPage(name: admin, page: () => AdminPage()),
      GetPage(name: manageDonations, page: () => ManageDonationsPage()),
